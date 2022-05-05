@@ -1,0 +1,231 @@
+
+<button onclick="RandomizeMap()">Randomize</button>
+<button onclick="MovePlayer('3')">Move North</button>
+<button onclick="MovePlayer('1')">Move South</button>
+<button onclick="MovePlayer('4')">Move West</button>
+<button onclick="MovePlayer('2')">Move East</button>
+
+<!-- <textarea id="output">meme</textarea> -->
+<h1 id="output">meme</h1>
+<style>
+    h1
+    {
+        font-family: 'Courier New', Courier, monospace;
+        font-size:16px;
+        font-weight:bold;
+        letter-spacing:9px;
+        background:black;
+        color:white;
+        line-height: 16px;
+    }
+    button
+    {
+        padding: 25px 50px;
+    }
+</style>
+    
+
+<script>
+    var width = 64;
+    var height = 64;
+    var player = Math.floor(Math.random() * width * height);
+    var obstacles = [];
+    var tempObstacles = [];
+
+
+    //Perlin noise mostly taken from a youtube tutorial
+
+    // for (let x = 0; x < width; x++) 
+    // {
+    //     for (let y = 0; y < height; y++) 
+    //     {
+
+    //         var fScale = 1.0;
+	// 		var fNoise = 0.0;
+	// 		var fScaleAcc = 0.0;
+	// 		var fBias = 2.0
+
+    //         for (let octave = 0; octave < 8; octave++) 
+    //         {
+
+    //             var nPitch = width << octave;
+    //             var nSampleX1 = (x / nPitch) * nPitch;
+    //             var nSampleY1 = (y / nPitch) * nPitch;
+
+    //             var nSampleX2 = (nSampleX1 + nPitch) % width;
+    //             var nSampleY2 = (nSampleY1 + nPitch) % width;
+
+    //             var fBlendX = parseFloat(x - nSampleX1).toFixed(5) / parseFloat(nPitch).toFixed(5);
+    //             var fBlendY = parseFloat(y - nSampleY1).toFixed(5) / parseFloat(nPitch).toFixed(5);
+
+    //             var fSampleT = (1.0 - fBlendX) * tempObstacles[nSampleY1 * width + nSampleX1] + fBlendX * tempObstacles[nSampleY1 * width + nSampleX2];
+    //             var fSampleB = (1.0 - fBlendX) * tempObstacles[nSampleY2 * width + nSampleX1, 0, width * height - 1]
+    //                     + fBlendX * tempObstacles[nSampleY2 * width + nSampleX2, 0, width * height - 1];
+
+    //             fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * fScale;
+	// 			fScaleAcc += fScale;
+
+	// 			fScale = fScale / fBias;
+    //         }
+    //         obstacles[x * height + y] = fNoise / fScaleAcc;
+    //     }
+    // }
+
+ 
+
+    var output = document.getElementById("output");
+    var input = document.getElementById("userinput");
+   // var button = document.getElementById("")
+
+    RandomizeMap();
+    Update("Updateing");
+
+
+    function Update(newname)
+    {
+        var map = "";
+
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (y % height == 0)
+                {
+                  //map += "\n";
+                  map += "<br>";
+                }
+                if (player == x * height + y)
+                {
+                    map += '#';
+                }
+                else if (obstacles[x * height + y] == 1)
+                {
+                    map += 'O';
+                }
+                else
+                {
+                    map += '-';
+                }
+                console.log(obstacles[x * height + y] + " " + (x * height + y));
+            }
+        }
+        output.innerHTML = map;
+    }
+
+    function CellularAutomata(filter)
+    {
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                var check = 0;
+                if (tempObstacles[(x * height + y) + 1] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) + height] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) - 1] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) - height] == 1)
+                {
+                    check++;
+                }
+                if (check >= filter) 
+                {
+                    continue;
+                }
+                obstacles[x * height + y] = 0;
+            } 
+        }
+        for (let index = 0; index < width * height; index++) 
+        {
+            tempObstacles[index] = obstacles[index];         
+        }
+
+    }
+    function RandomizeMap()
+    {
+        //Skapar noise
+        for (let index = 0; index < width * height; index++) 
+        {
+            var value = Math.random();
+            obstacles[index] = value;
+            tempObstacles[index] = value;
+
+            if (obstacles[index] < 0.5)
+            {
+                obstacles[index] = 1;
+                tempObstacles[index] = 1;
+            }
+            else
+            {
+                obstacles[index] = 0;
+                tempObstacles[index] = 0;
+            }
+        }
+
+        obstacles[0] = 0.5;
+
+
+        CellularAutomata(2);
+        CellularAutomata(1);
+
+        while (obstacles[player] != 0)
+        {
+            player = Math.floor(Math.random() * width * height);
+        }
+
+        Update();
+    }
+    function MovePlayer(direction)
+    {
+        if (direction == 1)
+        {
+            if (obstacles[player + height] != 1) 
+            {
+                if ((player + height) > width * height && obstacles[player - (width * height)] != 1)
+                {
+                    player -= ((width * height) - height);
+                }
+                else
+                {
+                    player += height;
+                }
+            }
+        }
+        else if (direction == 2)
+        {
+            if (obstacles[player + 1] != 1) 
+            {
+                player += 1;
+            }
+        }
+        else if (direction == 3)
+        {
+            if (obstacles[player - height] != 1) 
+            {
+                if ((player - height) < 0 && obstacles[player + (width * height)] != 1)
+                {
+                    player += (width * height) - height;
+                }
+                else
+                {
+                    player -= height;
+                }
+            }
+        }
+        else if (direction == 4)
+        {
+            if (obstacles[player - 1] != 1) 
+            {       
+                player -= 1;
+            }
+        }
+        Update();
+    }
+</script>
