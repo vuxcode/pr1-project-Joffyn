@@ -2,48 +2,26 @@
 
 
 <!-- <textarea id="output">meme</textarea> -->
-<canvas id="test" width="500" height="500"></canvas>
-<pre id="output"></pre>
-<div class="minimap" id="mini">mini</div>
+<canvas id="test" width="600" height="600"></canvas>
 <style>
-                *
+            *
             {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
-    pre
-    {
-        font-family: 'Courier New', Courier, monospace;
-        font-size:16px;
-        font-weight:bold;
-        letter-spacing:10px;
-        background:black;
-        color:white;
-        line-height: 16px;
-        padding: 5px 0px 5px 10px;
-        display: inline-block;
-        border-style: groove;
-        border-color: gray;
-        border-width: thick;
-        margin: auto;
-    }
+
     button
     {
         padding: 25px 50px;
         display: inline-block;
     }
-    .minimap
+    canvas
     {
-        font-family: 'Courier New', Courier, monospace;
-        font-size:8px;
-        font-weight:bold;
-        letter-spacing:5px;
-        background: red;
-        color:blue;
-        line-height: 8px;
-        display: inline-block;
+
     }
+
+
 </style>
     
 
@@ -52,7 +30,7 @@
     var height = 64;
     var worldSize = width * height;
 
-    var rect = 10;
+    var rect = 20;
     var canvas = document.getElementById("test");
     var ctx = canvas.getContext("2d");
     
@@ -61,7 +39,7 @@
     var obstacles = [];
     var tempObstacles = [];
 
-    var screenSize = 10;
+    var screenSize = 15;
 
  
 
@@ -75,66 +53,57 @@
 
     function Update(newname)
     {
-        var minimap = "";
-        var map = "";
         ctx.clearRect(0, 0, width, height);
 
-        for (let x = 0; x < width; x++) 
+        // for (let x = 0; x < width; x++) 
+        // {
+        //     for (let y = 0; y < height; y++) 
+        //     {
+        //         if (y % height == 0)
+        //         {
+        //           //map += "\n";
+        //           minimap += "<br>";
+        //         }
+        //         if (playerX == x && playerY == y)
+        //         {
+        //             minimap += '#';
+        //             ctx.fillStyle = 'red';
+        //         }
+        //         else if (obstacles[x * height + y] == 1)
+        //         {
+        //             minimap += 'O';
+        //             ctx.fillStyle = 'blue';
+        //         }
+        //         else
+        //         {
+        //             minimap += '-';
+        //             ctx.fillStyle = 'black'
+        //         }
+        //         ctx.fillRect(x * rect, y * rect, rect, rect);
+        //     }
+        // }
+        for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
-            for (let y = 0; y < height; y++) 
+            for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
             {
-                if (y % height == 0)
-                {
-                  //map += "\n";
-                  minimap += "<br>";
-                }
                 if (playerX == x && playerY == y)
                 {
-                    minimap += '#';
-                }
-                else if (obstacles[x * height + y] == 1)
-                {
-                    minimap += 'O';
-                }
-                else
-                {
-                    minimap += '-';
-                }
-            }
-        }
-        var screenEnd = 0;
-        for (let x = playerX - screenSize; x < playerX + screenSize; x++) 
-        {
-            for (let y = playerY - screenSize; y < playerY + screenSize; y++) 
-            {
-                if (screenEnd == screenSize * 2)
-                {
-                  map += "<br>";
-                  screenEnd = 0;
-                }
-                if (playerX == x && playerY == y)
-                {
-                    map += '#';
                     ctx.fillStyle = 'red';
                 }
                 else if (obstacles[x * height + y] == 1)
                 {
-                    map += 'O';
                     ctx.fillStyle = 'blue';
                 }
                 else
                 {
-                    map += '-';
                     ctx.fillStyle = 'black';
                 }
-                screenEnd++;
-
-                ctx.fillRect(x * rect, y * rect, rect, rect);
+                ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
             }
 
         }
-        output.innerHTML = map;
-        mini.innerHTML = minimap;
+        // output.innerHTML = map;
+        // mini.innerHTML = minimap;
     }
 
     function CellularAutomata(filter)
@@ -277,20 +246,20 @@
         // }
         if (direction == "South")
         {
-            playerX += 1;   
+            playerY += 1;   
         }
         else if (direction == "East")
         {
-             playerY += 1;  
+             playerX += 1;  
         }
         else if (direction == "North")
         {
-             playerX -= 1;
+             playerY -= 1;
         }
         else if (direction == "West")
         {
    
-            playerY -= 1;
+            playerX -= 1;
         }
         [playerX, playerY] = Wrapping(playerX, playerY);
         console.log(playerX, playerY);
