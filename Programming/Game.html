@@ -1,38 +1,48 @@
 
-<button onclick="RandomizeMap()">Randomize</button>
-<button onclick="MovePlayer('North')">Move North</button>
-<button onclick="MovePlayer('South')">Move South</button>
-<button onclick="MovePlayer('West')">Move West</button>
-<button onclick="MovePlayer('East')">Move East</button>
+
 
 <!-- <textarea id="output">meme</textarea> -->
-<div class="minimap" id="mini">mini</div>
+<canvas id="test"></canvas>
 <pre id="output"></pre>
+<div class="minimap" id="mini">mini</div>
 <style>
+                *
+            {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
     pre
     {
         font-family: 'Courier New', Courier, monospace;
         font-size:16px;
         font-weight:bold;
-        letter-spacing:9px;
+        letter-spacing:10px;
         background:black;
         color:white;
         line-height: 16px;
+        padding: 5px 0px 5px 10px;
+        display: inline-block;
+        border-style: groove;
+        border-color: gray;
+        border-width: thick;
+        margin: auto;
     }
     button
     {
         padding: 25px 50px;
+        display: inline-block;
     }
     .minimap
     {
         font-family: 'Courier New', Courier, monospace;
-        font-size:4px;
+        font-size:8px;
         font-weight:bold;
-        letter-spacing:2px;
+        letter-spacing:5px;
         background: red;
         color:blue;
-        line-height: 4px;
-        width: 256px;
+        line-height: 8px;
+        display: inline-block;
     }
 </style>
     
@@ -41,12 +51,18 @@
     var width = 64;
     var height = 64;
     var worldSize = width * height;
+
+    var rect = 5;
+    var canvas = document.getElementById("test");
+    var ctx = canvas.getContext("2d");
+    
     var playerX = width / 2;
     var playerY = height / 2;
     var obstacles = [];
     var tempObstacles = [];
 
     var screenSize = 10;
+
  
 
     var output = document.getElementById("output");
@@ -61,6 +77,7 @@
     {
         var minimap = "";
         var map = "";
+        ctx.clearRect(0, 0, width, height);
 
         for (let x = 0; x < width; x++) 
         {
@@ -92,24 +109,27 @@
             {
                 if (screenEnd == screenSize * 2)
                 {
-                  //map += "\n";
                   map += "<br>";
                   screenEnd = 0;
                 }
                 if (playerX == x && playerY == y)
                 {
                     map += '#';
+                    ctx.fillStyle = 'red';
                 }
                 else if (obstacles[x * height + y] == 1)
                 {
                     map += 'O';
+                    ctx.fillStyle = 'blue';
                 }
                 else
                 {
                     map += '-';
+                    ctx.fillStyle = 'black';
                 }
                 screenEnd++;
-                //console.log(x + " x " + y + " y");
+
+                ctx.fillRect(x * rect, y * rect, rect, rect);
             }
 
         }
@@ -187,6 +207,30 @@
 
         Update();
     }
+    function Wrapping(x, y)
+    {
+
+        var newX = x;
+        var newY = y;
+
+        if (x > width)
+        {
+            newX = x - (width + 1);
+        }
+        else if (x < 0)
+        {
+            newX = x + (width + 1);
+        }
+        if (y > height)
+        {
+            newY = y - (height + 1);
+        }
+        else if (y < 0)
+        {
+            newY = y + (height + 1);
+        }
+        return [newX, newY];
+    }
     function MovePlayer(direction)
     {
         // if (direction == 1)
@@ -248,6 +292,14 @@
    
             playerY -= 1;
         }
+        [playerX, playerY] = Wrapping(playerX, playerY);
+        console.log(playerX, playerY);
         Update();
     }
 </script>
+
+<button onclick="RandomizeMap()">Randomize</button>
+<button onclick="MovePlayer('North')">Move North</button>
+<button onclick="MovePlayer('South')">Move South</button>
+<button onclick="MovePlayer('West')">Move West</button>
+<button onclick="MovePlayer('East')">Move East</button>
