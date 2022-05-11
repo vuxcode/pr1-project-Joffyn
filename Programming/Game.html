@@ -6,6 +6,7 @@
 <button onclick="MovePlayer('East')">Move East</button>
 
 <!-- <textarea id="output">meme</textarea> -->
+<div class="minimap" id="mini">mini</div>
 <pre id="output"></pre>
 <style>
     pre
@@ -22,6 +23,17 @@
     {
         padding: 25px 50px;
     }
+    .minimap
+    {
+        font-family: 'Courier New', Courier, monospace;
+        font-size:4px;
+        font-weight:bold;
+        letter-spacing:2px;
+        background: red;
+        color:blue;
+        line-height: 4px;
+        width: 256px;
+    }
 </style>
     
 
@@ -29,59 +41,17 @@
     var width = 64;
     var height = 64;
     var worldSize = width * height;
-    //var player = Math.floor(Math.random() * worldSize);
     var playerX = width / 2;
     var playerY = height / 2;
     var obstacles = [];
     var tempObstacles = [];
 
     var screenSize = 10;
-    
-
-
-    //Perlin noise mostly taken from a youtube tutorial
-
-    // for (let x = 0; x < width; x++) 
-    // {
-    //     for (let y = 0; y < height; y++) 
-    //     {
-
-    //         var fScale = 1.0;
-	// 		var fNoise = 0.0;
-	// 		var fScaleAcc = 0.0;
-	// 		var fBias = 2.0
-
-    //         for (let octave = 0; octave < 8; octave++) 
-    //         {
-
-    //             var nPitch = width << octave;
-    //             var nSampleX1 = (x / nPitch) * nPitch;
-    //             var nSampleY1 = (y / nPitch) * nPitch;
-
-    //             var nSampleX2 = (nSampleX1 + nPitch) % width;
-    //             var nSampleY2 = (nSampleY1 + nPitch) % width;
-
-    //             var fBlendX = parseFloat(x - nSampleX1).toFixed(5) / parseFloat(nPitch).toFixed(5);
-    //             var fBlendY = parseFloat(y - nSampleY1).toFixed(5) / parseFloat(nPitch).toFixed(5);
-
-    //             var fSampleT = (1.0 - fBlendX) * tempObstacles[nSampleY1 * width + nSampleX1] + fBlendX * tempObstacles[nSampleY1 * width + nSampleX2];
-    //             var fSampleB = (1.0 - fBlendX) * tempObstacles[nSampleY2 * width + nSampleX1, 0, width * height - 1]
-    //                     + fBlendX * tempObstacles[nSampleY2 * width + nSampleX2, 0, width * height - 1];
-
-    //             fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * fScale;
-	// 			fScaleAcc += fScale;
-
-	// 			fScale = fScale / fBias;
-    //         }
-    //         obstacles[x * height + y] = fNoise / fScaleAcc;
-    //     }
-    // }
-
  
 
     var output = document.getElementById("output");
+    var minimap = document.getElementById("mini");
     var input = document.getElementById("userinput");
-   // var button = document.getElementById("")
 
     RandomizeMap();
     Update("Updateing");
@@ -89,38 +59,38 @@
 
     function Update(newname)
     {
+        var minimap = "";
         var map = "";
 
-        // for (let x = 0; x < width; x++) 
-        // {
-        //     for (let y = 0; y < height; y++) 
-        //     {
-        //         if (y % height == 0)
-        //         {
-        //           //map += "\n";
-        //           map += "<br>";
-        //         }
-        //         if (player == x * height + y)
-        //         {
-        //             map += '#';
-        //         }
-        //         else if (obstacles[x * height + y] == 1)
-        //         {
-        //             map += 'O';
-        //         }
-        //         else
-        //         {
-        //             map += '-';
-        //         }
-        //         console.log(obstacles[x * height + y] + " " + (x * height + y));
-        //     }
-        // }
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (y % height == 0)
+                {
+                  //map += "\n";
+                  minimap += "<br>";
+                }
+                if (playerX == x && playerY == y)
+                {
+                    minimap += '#';
+                }
+                else if (obstacles[x * height + y] == 1)
+                {
+                    minimap += 'O';
+                }
+                else
+                {
+                    minimap += '-';
+                }
+            }
+        }
         var screenEnd = 0;
         for (let x = playerX - screenSize; x < playerX + screenSize; x++) 
         {
             for (let y = playerY - screenSize; y < playerY + screenSize; y++) 
             {
-                if (screenEnd % screenSize == 0)
+                if (screenEnd == screenSize * 2)
                 {
                   //map += "\n";
                   map += "<br>";
@@ -139,10 +109,12 @@
                     map += '-';
                 }
                 screenEnd++;
+                //console.log(x + " x " + y + " y");
             }
-            //console.log(x);
+
         }
         output.innerHTML = map;
+        mini.innerHTML = minimap;
     }
 
     function CellularAutomata(filter)
@@ -261,20 +233,20 @@
         // }
         if (direction == "South")
         {
-            playerY += 1;   
+            playerX += 1;   
         }
         else if (direction == "East")
         {
-             playerX += 1;  
+             playerY += 1;  
         }
         else if (direction == "North")
         {
-             playerY -= 1;
+             playerX -= 1;
         }
         else if (direction == "West")
         {
    
-            playerX -= 1;
+            playerY -= 1;
         }
         Update();
     }
