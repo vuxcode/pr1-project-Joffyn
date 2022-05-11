@@ -2,8 +2,8 @@
 
 
 <!-- <textarea id="output">meme</textarea> -->
-<canvas id="output" width="600" height="600"></canvas>
-<canvas id="mini" width="300" height="300"></canvas>
+<canvas id="output" width="600" height="600" class="main"></canvas>
+<canvas id="mini" width="300" height="300" class="mini"></canvas>
 <style>
             *
             {
@@ -17,7 +17,11 @@
         padding: 25px 50px;
         display: inline-block;
     }
-    canvas
+    .main
+    {
+
+    }
+    .mini
     {
 
     }
@@ -38,6 +42,11 @@
 
     var miniCanvas = document.getElementById("mini");
     var ctxMini = miniCanvas.getContext("2d");
+
+    var directions = ["North","East","South","West"];
+    var player = new Vector(playerX, playerY);
+    var quadrant = new Quadrant(player);
+    var visibleTiles = [];
     
     var playerX = width / 2;
     var playerY = height / 2;
@@ -74,7 +83,27 @@
                 ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
             }
         }
-        var pos = [];
+        ComputeLight();
+        // for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
+        // {
+        //     for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
+        //     {
+        //         [x, y] = Wrapping(x, y);
+        //         if (playerX == x && playerY == y)
+        //         {
+        //             ctx.fillStyle = 'red';
+        //         }
+        //         else if (obstacles[x][y] == "solid")
+        //         {
+        //             ctx.fillStyle = 'blue';
+        //         }
+        //         else
+        //         {
+        //             ctx.fillStyle = 'black';
+        //         }
+        //         ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
+        //     }
+        // }
         for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
             for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
@@ -84,15 +113,24 @@
                 {
                     ctx.fillStyle = 'red';
                 }
-                else if (obstacles[x][y] == "solid")
+                if (visibleTiles[i].x == x && visibleTiles.y == y)
                 {
-                    ctx.fillStyle = 'blue';
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctx.fillStyle = 'blue';
+                    }
+                    else
+                    {
+                        ctx.fillStyle = 'white';
+                    }
+
                 }
                 else
                 {
                     ctx.fillStyle = 'black';
                 }
                 ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
+
             }
         }
     }
@@ -200,6 +238,7 @@
             return false;
         }
     }
+    
     function MovePlayer(direction)
     {
         var tempPlayerX = playerX;
@@ -232,7 +271,145 @@
         Update();
     }
 
-    function Vector(x, y)
+
+
+    function ComputeLight()
+    {
+        var source = new Vector(playerX, playerY);
+        quadrant = new Quadrant(source);
+
+        for (var i = 0; i < 4; i++)
+        {
+            quadrant.directions = directions[i];
+            var firstRow = new Row(1, -1, 1);
+
+            LightScan(firstRow);
+        }
+    }
+    function LightScan(row)
+    {
+        if (row.depth > screenSize)
+        {
+            return;
+        }
+        var prevTile = new Vector(-100, -100);
+
+        var tiles = Tiles(row);
+
+        for (let i = 0; i < tiles.length; i++) 
+        {
+            var tile = tiles[i];
+            if (Collision(tile.x, tile.y) || Symmetric(row, tiles[i]))
+            {
+                var visTile = QuadTransform(tiles[i], quadrant);
+                visibleTiles.push(visTile);
+            }
+            if (Collision(prevTile) && Floor(tiles[i]))
+            {
+                row.startSlope = Slope(tiles[i])
+            }
+            if (Floor(prevTile) && Collision(tiles[i]))
+            {
+                var nextRow = row.NextRow();
+                nextRow.endSlope = Slope(tiles[i]);
+                LightScan(nextRow);
+            }
+            prevTile = tiles[i];
+        }
+        if (Floor(prevTile))
+        {
+            LightScan(row.NextRow());
+        }
+        return;
+    }
+    function Tiles(row)
+    {
+        var minColumn = RoundTiesUp(row.depth * row.startSlope);
+        var maxColumn = RoundTiesDown(row.depth * row.endSlope);
+
+        var tiles = [];
+        for (var i = 0; i < maxColumn + 1 - minColumn; i++)
+        {
+            var v2d = new Vector(row.depth, minColumn + i);
+            tiles.push(v2d);
+        }
+        return tiles;
+    }
+    function RoundTiesUp(number)
+    {
+        return Math.floor(number + 0.5);
+    }
+    function RoundTiesDown(number)
+    {
+        return Math.ceil(number - 0.5);
+    }
+    function Symmetric(row, tile)
+    {
+        return tile.y >= row.depth * row.startSlope && tile.y <= row.depth * row.endSlope;
+    }
+    function IsWall(tile)
+    {
+        var tileToCheck = QuadTransform(tile, quadrant);
+    }
+    function Floor(tile)
+    {
+        var tileToCheck = QuadTransform(tile, quadrant);
+        return !(Collision(tile.x, tile.y));
+    }
+    function Slope(tile)
+    {
+        return (2.0 * tile.y - 1.0) / (2.0 * tile.x);
+    }
+    function Quadrant()
+    {
+        this.source = new Vector(0, 0);
+        this.directions = "";
+    }
+    function QuadTransform(tile, quadrant)
+    {
+        if (quadrant.directions == "South")
+        {
+            return new Vector(quadrant.source.x + tile.x, quadrant.source.y + tile.y);
+        }
+        else if (quadrant.directions == "East")
+        {
+            return new Vector(quadrant.source.x + tile.y, quadrant.source.y + tile.x);
+        }
+        else if (quadrant.directions == "North")
+        {
+            return new Vector(quadrant.source.x + tile.y, quadrant.source.y - tile.x);
+        }
+        else if (quadrant.directions == "West")
+        {
+            return new Vector(quadrant.source.x - tile.x, quadrant.source.y + tile.y);
+        }
+    }
+
+    function Row(depth, startSlope, endSlope)
+    {
+        this.depth = depth;
+        this.startSlope = startSlope;
+        this.endSlope = endSlope;
+    }
+    Row.prototype.NextRow = function ()
+    {
+        var nextRow = new Row(depth + 1, startSlope, endSlope);
+        return nextRow;
+    };
+    Row.prototype.Tiles = function (row) 
+    {
+        var minColumn = Math.floor((row.depth * row.startSlope) + 0.5);
+        var maxColumn = Math.ceil((row.depth * row.endSlope) + 0.5);
+
+        var tiles = [];
+        for (var i = 0; i < maxColumn + 1 - minColumn; i++)
+        {
+            var v2d = new Vector(row.depth, minColumn + i);
+            tiles.push(v2d);
+        }
+        return tiles;
+    };
+    function Vector (x, y)
     {
         this.x = x;
         this.y = y;
