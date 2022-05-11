@@ -2,7 +2,8 @@
 
 
 <!-- <textarea id="output">meme</textarea> -->
-<canvas id="test" width="600" height="600"></canvas>
+<canvas id="output" width="600" height="600"></canvas>
+<canvas id="mini" width="300" height="300"></canvas>
 <style>
             *
             {
@@ -31,8 +32,12 @@
     var worldSize = width * height;
 
     var rect = 20;
-    var canvas = document.getElementById("test");
+    var miniRect = 4;
+    var canvas = document.getElementById("output");
     var ctx = canvas.getContext("2d");
+
+    var miniCanvas = document.getElementById("mini");
+    var ctxMini = miniCanvas.getContext("2d");
     
     var playerX = width / 2;
     var playerY = height / 2;
@@ -40,11 +45,6 @@
     var tempObstacles = [];
 
     var screenSize = 15;
-
- 
-
-    var output = document.getElementById("output");
-    var minimap = document.getElementById("mini");
     var input = document.getElementById("userinput");
 
     RandomizeMap();
@@ -55,25 +55,25 @@
     {
         ctx.clearRect(0, 0, width, height);
 
-        // for (let x = 0; x < width; x++) 
-        // {
-        //     for (let y = 0; y < height; y++) 
-        //     {
-        //         if (playerX == x && playerY == y)
-        //         {
-        //             ctx.fillStyle = 'red';
-        //         }
-        //         else if (obstacles[x][y] == "solid")
-        //         {
-        //             ctx.fillStyle = 'blue';
-        //         }
-        //         else
-        //         {
-        //             ctx.fillStyle = 'black'
-        //         }
-        //         ctx.fillRect(x * rect, y * rect, rect, rect);
-        //     }
-        // }
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (playerX == x && playerY == y)
+                {
+                    ctxMini.fillStyle = 'red';
+                }
+                else if (obstacles[x][y] == "solid")
+                {
+                    ctxMini.fillStyle = 'blue';
+                }
+                else
+                {
+                    ctxMini.fillStyle = 'black'
+                }
+                ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
+            }
+        }
         var pos = [];
         for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
@@ -94,10 +94,7 @@
                 }
                 ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
             }
-
         }
-        // output.innerHTML = map;
-        // mini.innerHTML = minimap;
     }
 
     function CellularAutomata(filter)
@@ -150,7 +147,7 @@
             {
                 var value = Math.random();
 
-                if (value < 0.4)
+                if (value < 0.45)
                 {
                     obstacles[x][y] = "solid";
                     tempObstacles[x][y] = "solid";
@@ -166,12 +163,6 @@
 
         CellularAutomata(2);
         CellularAutomata(1);
-
-        // while (obstacles[player] != 0)
-        // {
-        //     player = Math.floor(Math.random() * width * height);
-        // }
-
         Update();
     }
     function Wrapping(x, y)
