@@ -198,27 +198,46 @@
         }
         return [newX, newY];
     }
+    function Collision(x, y)
+    {
+        if (obstacles[x][y] == "solid")
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
     function MovePlayer(direction)
     {
+        var tempPlayerX = playerX;
+        var tempPlayerY = playerY;
+        
         if (direction == "South")
         {
-            playerY += 1;   
+            tempPlayerY += 1;   
         }
         else if (direction == "East")
         {
-             playerX += 1;  
+            tempPlayerX += 1;  
         }
         else if (direction == "North")
         {
-             playerY -= 1;
+            tempPlayerY -= 1;
         }
         else if (direction == "West")
         {
    
-            playerX -= 1;
+            tempPlayerX -= 1;
         }
-        [playerX, playerY] = Wrapping(playerX, playerY);
-        console.log(playerX, playerY);
+        [tempPlayerX, tempPlayerY] = Wrapping(tempPlayerX, tempPlayerY);
+        if (!Collision(tempPlayerX, tempPlayerY))
+        {
+            [playerX, playerY] = [tempPlayerX, tempPlayerY];
+            console.log(playerX, playerY);
+        }
+
         Update();
     }
 
