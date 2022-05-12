@@ -3,7 +3,7 @@
 
 <!-- <textarea id="output">meme</textarea> -->
 <canvas id="output" width="600" height="600" class="main"></canvas>
-<canvas id="mini" width="300" height="300" class="mini"></canvas>
+<canvas id="mini" width="600" height="600" class="mini"></canvas>
 <style>
             *
             {
@@ -31,9 +31,7 @@
     
 
 <script>
-    var width = 64;
-    var height = 64;
-    var worldSize = width * height;
+
 
     var rect = 20;
     var miniRect = 4;
@@ -42,6 +40,10 @@
 
     var miniCanvas = document.getElementById("mini");
     var ctxMini = miniCanvas.getContext("2d");
+
+    var width = canvas.width / 5;
+    var height = canvas.height / 5;
+    var worldSize = width * height;
 
     var directions = ["North","East","South","West"];
     // var player = new Vector(playerX, playerY);
@@ -66,33 +68,6 @@
         ctx.clearRect(0, 0, width, height);
 
         ComputeLight();
-        for (let x = 0; x < width; x++) 
-        {
-            for (let y = 0; y < height; y++) 
-            {
-                if (playerX == x && playerY == y)
-                {
-                    ctxMini.fillStyle = 'red';
-                }
-                else if (exploredTiles[x][y])
-                {
-                    if (obstacles[x][y] == "solid")
-                    {
-                        ctxMini.fillStyle = 'gray';
-                    }
-                    else
-                    {
-                        ctxMini.fillStyle = 'white'
-                    }
-                }
-                else
-                {
-                    ctxMini.fillStyle = 'black';
-                }
-
-                ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
-            }
-        }
         for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
             for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
@@ -102,7 +77,7 @@
                 {
                     ctx.fillStyle = 'red';
                 }
-                else if (visibleTiles.includes(x * height + y))
+                else if (exploredTiles[x][y] == "visible")
                 {
                     if (obstacles[x][y] == "solid")
                     {
@@ -112,9 +87,10 @@
                     {
                         ctx.fillStyle = 'white';
                     }
+                    exploredTiles[x][y] = "explored";
 
                 }
-                else if (exploredTiles[x][y])
+                else if (exploredTiles[x][y] == "explored")
                 {
                     if (obstacles[x][y] == "solid")
                     {
@@ -131,7 +107,34 @@
                     ctx.fillStyle = 'black';
                 }
                 ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
+                
+            }
+        }
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (playerX == x && playerY == y)
+                {
+                    ctxMini.fillStyle = 'red';
+                }
+                else if (exploredTiles[x][y] == "explored")
+                {
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctxMini.fillStyle = 'gray';
+                    }
+                    else
+                    {
+                        ctxMini.fillStyle = 'white'
+                    }
+                }
+                else
+                {
+                    ctxMini.fillStyle = 'black';
+                }
 
+                ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
             }
         }
     }
@@ -200,7 +203,7 @@
                     obstacles[x][y] = "empty";
                     tempObstacles[x][y] = "empty";
                 }
-                exploredTiles[x][y] = "";
+                exploredTiles[x][y] = "unexplored";
             } 
         }
 
@@ -292,17 +295,10 @@
 
     function ComputeLight()
     {
-        // var source = new Vector(playerX, playerY);
-        // quadrant = new Quadrant(source);
-        visibleTiles = [];
         var source = [playerX, playerY];
-        
-
         for (var i = 0; i < 4; i++)
         {
-            //quadrant.directions = directions[i];
             quadrant = [source, directions[i]];
-            //var firstRow = new Row(1, -1, 1);
             var firstRow = [1, -1, 1];
 
             LightScan(firstRow);
@@ -328,8 +324,8 @@
             if (Wall(tile) || Symmetric(row, tile))
             {
                 var visTile = QuadTransform(tile);
-                visibleTiles.push(visTile[0] * height + visTile[1]);
-                exploredTiles[visTile[0]][visTile[1]] = "explored";
+                //visibleTiles.push(visTile[0] * height + visTile[1]);
+                exploredTiles[visTile[0]][visTile[1]] = "visible";
                 //visibleTiles.push(visTile);
             }
             if (prevTile && Wall(prevTile) && Floor(tile))
