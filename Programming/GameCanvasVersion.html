@@ -238,6 +238,18 @@
             return false;
         }
     }
+    function Wall(tile)
+    {
+        var tileToCheck = QuadTransform(new Vector(tile.x, tile.y), quadrant);
+        if (obstacles[tileToCheck.x][tileToCheck.y] == "solid")
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
     
     function MovePlayer(direction)
     {
@@ -292,23 +304,23 @@
         {
             return;
         }
-        var prevTile = new Vector(-100, -100);
+        var prevTile;
 
         var tiles = Tiles(row);
 
         for (let i = 0; i < tiles.length; i++) 
         {
             var tile = tiles[i];
-            if (Collision(tile.x, tile.y) || Symmetric(row, tiles[i]))
+            if (Wall(tile) || Symmetric(row, tile))
             {
                 var visTile = QuadTransform(tiles[i], quadrant);
                 visibleTiles.push(visTile);
             }
-            if (Collision(prevTile) && Floor(tiles[i]))
+            if (prevTile && Wall(prevTile) && Floor(tile))
             {
                 row.startSlope = Slope(tiles[i])
             }
-            if (Floor(prevTile) && Collision(tiles[i]))
+            if (prevTile && Floor(prevTile) && Wall(tile))
             {
                 var nextRow = row.NextRow();
                 nextRow.endSlope = Slope(tiles[i]);
@@ -347,22 +359,18 @@
     {
         return tile.y >= row.depth * row.startSlope && tile.y <= row.depth * row.endSlope;
     }
-    function IsWall(tile)
-    {
-        var tileToCheck = QuadTransform(tile, quadrant);
-    }
     function Floor(tile)
     {
         var tileToCheck = QuadTransform(tile, quadrant);
-        return !(Collision(tile.x, tile.y));
+        return !(Wall(tileToCheck));
     }
     function Slope(tile)
     {
         return (2.0 * tile.y - 1.0) / (2.0 * tile.x);
     }
-    function Quadrant()
+    function Quadrant(source)
     {
-        this.source = new Vector(0, 0);
+        this.source = source;
         this.directions = "";
     }
     function QuadTransform(tile, quadrant)
