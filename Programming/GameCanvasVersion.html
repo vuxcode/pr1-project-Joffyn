@@ -47,6 +47,7 @@
     // var player = new Vector(playerX, playerY);
     var quadrant = [];
     var visibleTiles = [];
+    var exploredTiles = [];
     
     var playerX = width / 2;
     var playerY = height / 2;
@@ -64,6 +65,7 @@
     {
         ctx.clearRect(0, 0, width, height);
 
+        ComputeLight();
         for (let x = 0; x < width; x++) 
         {
             for (let y = 0; y < height; y++) 
@@ -72,38 +74,25 @@
                 {
                     ctxMini.fillStyle = 'red';
                 }
-                else if (obstacles[x][y] == "solid")
+                else if (exploredTiles.includes(x * height + y))
                 {
-                    ctxMini.fillStyle = 'blue';
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctxMini.fillStyle = 'gray';
+                    }
+                    else
+                    {
+                        ctxMini.fillStyle = 'white'
+                    }
                 }
                 else
                 {
-                    ctxMini.fillStyle = 'black'
+                    ctxMini.fillStyle = 'black';
                 }
+
                 ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
             }
         }
-        ComputeLight();
-        // for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
-        // {
-        //     for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
-        //     {
-        //         [x, y] = Wrapping(x, y);
-        //         if (playerX == x && playerY == y)
-        //         {
-        //             ctx.fillStyle = 'red';
-        //         }
-        //         else if (obstacles[x][y] == "solid")
-        //         {
-        //             ctx.fillStyle = 'blue';
-        //         }
-        //         else
-        //         {
-        //             ctx.fillStyle = 'black';
-        //         }
-        //         ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
-        //     }
-        // }
         for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
             for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
@@ -306,7 +295,7 @@
     function LightScan(row)
     {
         //First element is the depth of the row. If outside the view of the screen, there is no point to continue calculating.
-        if (row[0] > 5 || !isFinite(row[2]))
+        if (row[0] > screenSize || !isFinite(row[2]))
         {
             return;
         }
@@ -323,6 +312,7 @@
             {
                 var visTile = QuadTransform(tile);
                 visibleTiles.push(visTile[0] * height + visTile[1]);
+                exploredTiles.push(visTile[0] * height + visTile[1]);
                 //visibleTiles.push(visTile);
             }
             if (prevTile && Wall(prevTile) && Floor(tile))
