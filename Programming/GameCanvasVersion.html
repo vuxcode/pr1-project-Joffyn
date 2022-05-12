@@ -19,7 +19,7 @@
     }
     .main
     {
-
+        
     }
     .mini
     {
@@ -74,7 +74,7 @@
                 {
                     ctxMini.fillStyle = 'red';
                 }
-                else if (exploredTiles.includes(x * height + y))
+                else if (exploredTiles[x][y])
                 {
                     if (obstacles[x][y] == "solid")
                     {
@@ -113,6 +113,18 @@
                         ctx.fillStyle = 'white';
                     }
 
+                }
+                else if (exploredTiles[x][y])
+                {
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctx.fillStyle = 'dimgray';
+                    }
+                    else
+                    {
+                         ctx.fillStyle = 'lightslategray';
+                         
+                    }
                 }
                 else
                 {
@@ -165,11 +177,15 @@
     }
     function RandomizeMap()
     {
+        visibleTiles = [];
+        exploredTiles = [];
+
         //Skapar noise
         for (let x = 0; x < width; x++) 
         {
             obstacles[x] = [];
             tempObstacles[x] = [];
+            exploredTiles[x] = [];
             for (let y = 0; y < height; y++) 
             {
                 var value = Math.random();
@@ -184,6 +200,7 @@
                     obstacles[x][y] = "empty";
                     tempObstacles[x][y] = "empty";
                 }
+                exploredTiles[x][y] = "";
             } 
         }
 
@@ -312,7 +329,7 @@
             {
                 var visTile = QuadTransform(tile);
                 visibleTiles.push(visTile[0] * height + visTile[1]);
-                exploredTiles.push(visTile[0] * height + visTile[1]);
+                exploredTiles[visTile[0]][visTile[1]] = "explored";
                 //visibleTiles.push(visTile);
             }
             if (prevTile && Wall(prevTile) && Floor(tile))
