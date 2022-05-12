@@ -113,7 +113,7 @@
                 {
                     ctx.fillStyle = 'red';
                 }
-                if (visibleTiles[i].x == x && visibleTiles.y == y)
+                else if (visibleTiles.includes(x * height + y))
                 {
                     if (obstacles[x][y] == "solid")
                     {
@@ -288,6 +288,7 @@
     {
         // var source = new Vector(playerX, playerY);
         // quadrant = new Quadrant(source);
+        visibleTiles = [];
         var source = [playerX, playerY];
         
 
@@ -301,10 +302,11 @@
             LightScan(firstRow);
         }
     }
+
     function LightScan(row)
     {
         //First element is the depth of the row. If outside the view of the screen, there is no point to continue calculating.
-        if (row[0] > screenSize)
+        if (row[0] > 5 || !isFinite(row[2]))
         {
             return;
         }
@@ -320,7 +322,8 @@
             if (Wall(tile) || Symmetric(row, tile))
             {
                 var visTile = QuadTransform(tile);
-                visibleTiles.push(visTile);
+                visibleTiles.push(visTile[0] * height + visTile[1]);
+                //visibleTiles.push(visTile);
             }
             if (prevTile && Wall(prevTile) && Floor(tile))
             {
@@ -371,7 +374,7 @@
     }
     function Slope(tile)
     {
-        return (2.0 * tile[1] - 1.0) / (2.0 * tile[1]);
+        return (2.0 * tile[1] - 1.0) / (2.0 * tile[0]);
     }
     function Quadrant(source)
     {
