@@ -10,8 +10,7 @@ header
     text-align: center;
     margin: auto;
     padding: 50px 0px;
-    background-color: beige;
-    color:#5c6772;
+    background: linear-gradient(to top, slategray, darkslategray);
 }
 .linklist
 {
@@ -20,7 +19,7 @@ header
 .linkbar
 {
     padding: 35px 15px;
-    background-color:bisque;
+    background-color:slategray;
 }
 .sidebar
 {
@@ -40,12 +39,12 @@ header
 .pagelinks a:link
 {
     text-decoration: none;
+    color:black;
 }
 .pagelinks a:visited
 {
     color: black;
 }
-
 ul
 {
     list-style-type: none;
