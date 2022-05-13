@@ -11,19 +11,30 @@ header
     margin: auto;
     padding: 50px 0px;
     background-color: beige;
+    color:#5c6772;
 }
 .linkbar
 {
     padding: 35px 0px;
     background-color:bisque;
 }
+.sidebar
+{
+    margin: 20px 30px 0px 200px;
+    width: 300px;
+    display: inline-block;
+}
+.mainwrapper
+{
+    margin: auto;
+
+}
 main 
 {
-    margin: 0 auto;
     border-style: groove;
     border-color: #cd5c5c;
     border-width: thick;
-    height: 600px;
-    width: 900px;
+    min-width: 80vh;
+    display: inline-block;
     /* padding: 50px; */
 }
