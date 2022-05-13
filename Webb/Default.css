@@ -13,28 +13,53 @@ header
     background-color: beige;
     color:#5c6772;
 }
+.linklist
+{
+    padding: 0px 0px 15px 0px;
+}
 .linkbar
 {
-    padding: 35px 0px;
+    padding: 35px 15px;
     background-color:bisque;
 }
 .sidebar
 {
     margin: 20px 30px 0px 200px;
-    width: 300px;
+    width: 150px;
     display: inline-block;
+}
+.pagelinks
+{
+    float: left;
+    padding: 0px 15px 0px 25px;
+    display: block;
+    text-align: center;
+    color: black;
+    font-size: larger;
+}
+.pagelinks a:link
+{
+    text-decoration: none;
+}
+.pagelinks a:visited
+{
+    color: black;
+}
+
+ul
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 .mainwrapper
 {
     margin: auto;
-
+    background-color:slategray;
 }
 main 
 {
-    border-style: groove;
-    border-color: #cd5c5c;
-    border-width: thick;
     min-width: 80vh;
     display: inline-block;
-    /* padding: 50px; */
+
 }
