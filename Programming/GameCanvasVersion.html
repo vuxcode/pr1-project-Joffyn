@@ -12,11 +12,7 @@
                 box-sizing: border-box;
             }
 
-    button
-    {
-        padding: 25px 50px;
-        display: inline-block;
-    }
+
     .main
     {
         
@@ -24,6 +20,11 @@
     .mini
     {
 
+    }
+    .movebutton
+    {
+        padding: 25px 50px;
+        display: inline-block;
     }
 
 
@@ -440,8 +441,8 @@
     }
 </script>
 
-<button onclick="RandomizeMap()">Randomize</button>
-<button onclick="MovePlayer('North')">Move North</button>
-<button onclick="MovePlayer('South')">Move South</button>
-<button onclick="MovePlayer('West')">Move West</button>
-<button onclick="MovePlayer('East')">Move East</button>
+<button onclick="RandomizeMap()" class="movebutton">Randomize</button>
+<button onclick="MovePlayer('North')" class="movebutton">Move North</button>
+<button onclick="MovePlayer('South')" class="movebutton">Move South</button>
+<button onclick="MovePlayer('West')" class="movebutton">Move West</button>
+<button onclick="MovePlayer('East')" class="movebutton">Move East</button>

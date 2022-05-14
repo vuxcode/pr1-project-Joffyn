@@ -14,3 +14,16 @@ main
     width: 810px;
     /* padding: 50px; */
 }
+.main
+{
+    
+}
+.mini
+{
+
+}
+.movebutton
+{
+    padding: 25px 50px;
+    display: inline-block;
+}

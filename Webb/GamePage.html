@@ -20,7 +20,423 @@
 
             </div>
             <main>
+                <canvas id="output" width="600" height="600" class="main"></canvas>
+                <canvas id="mini" width="600" height="600" class="mini"></canvas>
+                <button onclick="RandomizeMap()" class="movebutton">Randomize</button>
+                <button onclick="MovePlayer('North')" class="movebutton">Move North</button>
+                <button onclick="MovePlayer('South')" class="movebutton">Move South</button>
+                <button onclick="MovePlayer('West')" class="movebutton">Move West</button>
+                <button onclick="MovePlayer('East')" class="movebutton">Move East</button>
             </main>
         </div>
     </body>
 </html>
+<script>
+
+
+    var rect = 20;
+    var miniRect = 4;
+    var canvas = document.getElementById("output");
+    var ctx = canvas.getContext("2d");
+
+    var miniCanvas = document.getElementById("mini");
+    var ctxMini = miniCanvas.getContext("2d");
+
+    var width = canvas.width / 5;
+    var height = canvas.height / 5;
+    var worldSize = width * height;
+
+    var directions = ["North","East","South","West"];
+    // var player = new Vector(playerX, playerY);
+    var quadrant = [];
+    var visibleTiles = [];
+    var exploredTiles = [];
+    
+    var playerX = width / 2;
+    var playerY = height / 2;
+    var obstacles = [];
+    var tempObstacles = [];
+
+    var screenSize = 15;
+    var input = document.getElementById("userinput");
+
+    RandomizeMap();
+    Update("Updateing");
+
+
+    function Update(newname)
+    {
+        ctx.clearRect(0, 0, width, height);
+
+        ComputeLight();
+        for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
+        {
+            for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
+            {
+                [x, y] = Wrapping(x, y);
+                if (playerX == x && playerY == y)
+                {
+                    ctx.fillStyle = 'red';
+                }
+                else if (exploredTiles[x][y] == "visible")
+                {
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctx.fillStyle = 'darkslategray';
+                    }
+                    else
+                    {
+                        ctx.fillStyle = 'white';
+                    }
+                    exploredTiles[x][y] = "explored";
+
+                }
+                else if (exploredTiles[x][y] == "explored")
+                {
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctx.fillStyle = '#5c6772';
+                    }
+                    else
+                    {
+                         ctx.fillStyle = 'lightslategray';
+                         
+                    }
+                }
+                else
+                {
+                    ctx.fillStyle = 'black';
+                }
+                ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
+                
+            }
+        }
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (playerX == x && playerY == y)
+                {
+                    ctxMini.fillStyle = 'red';
+                }
+                else if (exploredTiles[x][y] == "explored")
+                {
+                    if (obstacles[x][y] == "solid")
+                    {
+                        ctxMini.fillStyle = 'gray';
+                    }
+                    else
+                    {
+                        ctxMini.fillStyle = 'white'
+                    }
+                }
+                else
+                {
+                    ctxMini.fillStyle = 'black';
+                }
+
+                ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
+            }
+        }
+    }
+
+    function CellularAutomata(filter)
+    {
+        for (let x = 1; x < width - 1; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                var check = 0;
+                if (tempObstacles[x + 1][y] == "solid")
+                {
+                    check++;
+                }
+                if (tempObstacles[x][y + 1] == "solid")
+                {
+                    check++;
+                }
+                if (tempObstacles[x - 1][y] == "solid")
+                {
+                    check++;
+                }
+                if (tempObstacles[x][y - 1] == "solid")
+                {
+                    check++;
+                }
+                if (check >= filter) 
+                {
+                    continue;
+                }
+                obstacles[x][y] = "empty";
+            } 
+        }
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++)
+            {
+                tempObstacles[x][y] = obstacles[x][y];       
+            }
+        }
+
+    }
+    function RandomizeMap()
+    {
+        visibleTiles = [];
+        exploredTiles = [];
+
+        //Skapar noise
+        for (let x = 0; x < width; x++) 
+        {
+            obstacles[x] = [];
+            tempObstacles[x] = [];
+            exploredTiles[x] = [];
+            for (let y = 0; y < height; y++) 
+            {
+                var value = Math.random();
+
+                if (value < 0.45)
+                {
+                    obstacles[x][y] = "solid";
+                    tempObstacles[x][y] = "solid";
+                }
+                else
+                {
+                    obstacles[x][y] = "empty";
+                    tempObstacles[x][y] = "empty";
+                }
+                exploredTiles[x][y] = "unexplored";
+            } 
+        }
+
+
+        CellularAutomata(2);
+        CellularAutomata(1);
+        Update();
+    }
+    function Wrapping(x, y)
+    {
+
+        var newX = x;
+        var newY = y;
+
+        if (x >= width)
+        {
+            newX = x - width;
+        }
+        else if (x < 0)
+        {
+            newX = x + width;
+        }
+        if (y >= height)
+        {
+            newY = y - (height);
+        }
+        else if (y < 0)
+        {
+            newY = y + (height);
+        }
+        return [newX, newY];
+    }
+    function Collision(x, y)
+    {
+        if (obstacles[x][y] == "solid")
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+    function Wall(tile)
+    {
+        var tileToCheck = QuadTransform(tile, quadrant);
+        if (obstacles[tileToCheck[0]][tileToCheck[1]] == "solid")
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+    
+    function MovePlayer(direction)
+    {
+        var tempPlayerX = playerX;
+        var tempPlayerY = playerY;
+        
+        if (direction == "South")
+        {
+            tempPlayerY += 1;   
+        }
+        else if (direction == "East")
+        {
+            tempPlayerX += 1;  
+        }
+        else if (direction == "North")
+        {
+            tempPlayerY -= 1;
+        }
+        else if (direction == "West")
+        {
+            tempPlayerX -= 1;
+        }
+        [tempPlayerX, tempPlayerY] = Wrapping(tempPlayerX, tempPlayerY);
+        if (!Collision(tempPlayerX, tempPlayerY))
+        {
+            [playerX, playerY] = [tempPlayerX, tempPlayerY];
+            console.log(playerX, playerY);
+        }
+
+        Update();
+    }
+
+
+
+    function ComputeLight()
+    {
+        var source = [playerX, playerY];
+        for (var i = 0; i < 4; i++)
+        {
+            quadrant = [source, directions[i]];
+            var firstRow = [1, -1, 1];
+
+            LightScan(firstRow);
+        }
+    }
+
+    function LightScan(row)
+    {
+        //First element is the depth of the row. If outside the view of the screen, there is no point to continue calculating.
+        if (row[0] > screenSize || !isFinite(row[2]))
+        {
+            return;
+        }
+        //Tiles are 2D vectors made through an array. The first element is the X value, second is the Y value.
+
+        var prevTile;
+
+        var tiles = Tiles(row);
+
+        for (let i = 0; i < tiles.length; i++) 
+        {
+            var tile = tiles[i];
+            if (Wall(tile) || Symmetric(row, tile))
+            {
+                var visTile = QuadTransform(tile);
+                //visibleTiles.push(visTile[0] * height + visTile[1]);
+                exploredTiles[visTile[0]][visTile[1]] = "visible";
+                //visibleTiles.push(visTile);
+            }
+            if (prevTile && Wall(prevTile) && Floor(tile))
+            {
+                row[1] = Slope(tile)
+            }
+            if (prevTile && Floor(prevTile) && Wall(tile))
+            {
+                var nextRow = NextRow(row);
+                nextRow[2] = Slope(tile);
+                LightScan(nextRow);
+            }
+            prevTile = tile;
+        }
+        if (Floor(prevTile))
+        {
+            LightScan(NextRow(row));
+        }
+        return;
+    }
+    function Tiles(row)
+    {
+        var minColumn = RoundTiesUp(row[0] * row[1]);
+        var maxColumn = RoundTiesDown(row[0] * row[2]);
+
+        var tiles = [];
+        for (var i = 0; i < maxColumn + 1 - minColumn; i++)
+        {
+            var v2d = [row[0], minColumn + i];
+            tiles.push(v2d);
+        }
+        return tiles;
+    }
+    function RoundTiesUp(number)
+    {
+        return Math.floor(number + 0.5);
+    }
+    function RoundTiesDown(number)
+    {
+        return Math.ceil(number - 0.5);
+    }
+    function Symmetric(row, tile)
+    {
+        return tile[1] >= row[0] * row[1] && tile[1] <= row[0] * row[2];
+    }
+    function Floor(tile)
+    {
+        return !(Wall(tile));
+    }
+    function Slope(tile)
+    {
+        return (2.0 * tile[1] - 1.0) / (2.0 * tile[0]);
+    }
+    function Quadrant(source)
+    {
+        this.source = source;
+        this.directions = "";
+    }
+    function QuadTransform(tile)
+    {
+        var tileToCheck = [];
+        if (quadrant[1] == "South")
+        {
+            return Wrapping(quadrant[0][0] + tile[0], quadrant[0][1] + tile[1]);
+            //return [quadrant[0][0] + tile[0], quadrant[0][1] + tile[1]];
+        }
+        else if (quadrant[1] == "East")
+        {
+            return Wrapping(quadrant[0][0] + tile[1], quadrant[0][1] + tile[0]);
+            //return [quadrant[0][0] + tile[1], quadrant[0][1] + tile[0]];
+        }
+        else if (quadrant[1] == "North")
+        {
+            return Wrapping(quadrant[0][0] + tile[1], quadrant[0][1] - tile[0]);
+            //return [quadrant[0][0] + tile[1], quadrant[0][1] - tile[0]];
+        }
+        else if (quadrant[1] == "West")
+        {
+            return Wrapping(quadrant[0][0] - tile[0], quadrant[0][1] + tile[1]);
+            //return [quadrant[0][0] - tile[0], quadrant[0][1] + tile[1]];
+        }
+    }
+
+    function Row(depth, startSlope, endSlope)
+    {
+        this.depth = depth;
+        this.startSlope = startSlope;
+        this.endSlope = endSlope;
+    }
+    function NextRow(prevRow)
+    {
+        var nextRow = [prevRow[0] + 1, prevRow[1], prevRow[2]];
+        return nextRow;
+    }
+    Row.prototype.Tiles = function (row) 
+    {
+        var minColumn = Math.floor((row.depth * row.startSlope) + 0.5);
+        var maxColumn = Math.ceil((row.depth * row.endSlope) + 0.5);
+
+        var tiles = [];
+        for (var i = 0; i < maxColumn + 1 - minColumn; i++)
+        {
+            var v2d = new Vector(row.depth, minColumn + i);
+            tiles.push(v2d);
+        }
+        return tiles;
+    };
+    function Vector (x, y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+</script>
