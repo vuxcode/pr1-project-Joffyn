@@ -9,7 +9,7 @@ header
     box-sizing: border-box;
     text-align: center;
     margin: auto;
-    padding: 50px 0px;
+    padding: 40px 0px;
     background: linear-gradient(to top, slategray, darkslategray);
 }
 .linklist
@@ -18,12 +18,17 @@ header
 }
 .linkbar
 {
-    padding: 35px 15px;
+    padding: 25px 10px;
     background-color:slategray;
+
+    border-width: 0px;
+    border-bottom: thick;
+
+    border-style:ridge;
+    border-color:rgb(85, 95, 105);
 }
 .sidebar
 {
-    margin-left: 200px;
     overflow: hidden;
     height: 100%;
     width: 100px;
@@ -58,7 +63,13 @@ ul
 {
     margin: auto;
 }
+body
+{
+    background-color: rgb(130, 150, 172);
+}
 main 
 {
-    margin: 0px 200px 0px 350px;
+    margin: 0 auto;
+    width: 1060px;
+    /* padding: 50px; */
 }

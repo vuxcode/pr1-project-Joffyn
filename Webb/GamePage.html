@@ -3,7 +3,7 @@
     <head>
         <!-- <link href="GamePage.css" rel="stylesheet"> -->
         <link href="Default.css" rel="stylesheet">
-        <!-- <link href="GamePage.css" rel="stylesheet"> -->
+        <link href="GamePage.css" rel="stylesheet">
     </head>
     <body>
         <header>
@@ -27,13 +27,33 @@
             </ol>
         </div>
         <main>
-            <canvas id="output" width="600" height="600"></canvas>
-            <canvas id="mini" width="600" height="600"></canvas>
-            <!-- <button onclick="RandomizeMap()" class="movebutton">Randomize</button>
-            <button onclick="MovePlayer('North')" class="movebutton">Move North</button>
-            <button onclick="MovePlayer('South')" class="movebutton">Move South</button>
-            <button onclick="MovePlayer('West')" class="movebutton">Move West</button>
-            <button onclick="MovePlayer('East')" class="movebutton">Move East</button> -->
+            <div id="topscreen" class="screenparts">
+
+            </div>
+            <div id="midscreen" class="screenparts">
+                <section class="left"></section>
+                <section class="mid"><canvas id="output" width="600" height="600"></canvas></section>
+                <section class="right"><canvas id="mini" class="mini" width="240" height="240"></canvas></section>
+            </div>
+            <div id="bottomscreen" class="screenparts">
+                <section class="left">
+                    <button onclick="RandomizeMap()" class="restartbutton">Restart</button>
+                </section>  
+                <section class="mid">
+                    <button onclick="MovePlayer('North')" class="topbutton">Move North</button>
+                    <div class="divider">
+                        <button onclick="MovePlayer('West')" class="leftbutton">Move West</button>
+                        <button onclick="MovePlayer('East')" class="rightbutton">Move East</button>
+                    </div>
+                    <button onclick="MovePlayer('South')" class="bottombutton">Move South</button>
+                </section>
+                <section class="right">
+                </section>
+
+            </div>
+
+
+
         </main>
     </body>
 </html>
@@ -41,7 +61,7 @@
 
 
     var rect = 20;
-    var miniRect = 4;
+    var miniRect = 2;
     var canvas = document.getElementById("output");
     var ctx = canvas.getContext("2d");
 
