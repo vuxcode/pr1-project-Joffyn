@@ -14,16 +14,22 @@ main
     width: 810px;
     /* padding: 50px; */
 }
-.main
+.mainscreen
 {
+    display: block;   
     
 }
 .mini
 {
-
+    display: block;   
+}
+canvas
+{
+    display: block;   
+    margin: 500px;
 }
 .movebutton
 {
     padding: 25px 50px;
-    display: inline-block;
+    display: block;   
 }

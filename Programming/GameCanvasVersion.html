@@ -52,8 +52,12 @@
     var visibleTiles = [];
     var exploredTiles = [];
     
-    var playerX = width / 2;
-    var playerY = height / 2;
+    var playerX;
+    var playerY;
+
+    var goalX;
+    var goalY;
+
     var obstacles = [];
     var tempObstacles = [];
 
@@ -211,6 +215,17 @@
 
         CellularAutomata(2);
         CellularAutomata(1);
+
+        var player = Math.floor(Math.random() * width * height);
+        playerY = Math.floor(Math.random() * height);
+        playerX = Math.floor(Math.random() * width);
+
+
+        while (obstacles[playerX][playerY] == "solid")
+        {
+            
+        }
+
         Update();
     }
     function Wrapping(x, y)

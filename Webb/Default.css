@@ -23,9 +23,12 @@ header
 }
 .sidebar
 {
-    margin: 20px 30px 0px 200px;
-    width: 150px;
+    margin-left: 200px;
+    overflow: hidden;
+    height: 100%;
+    width: 100px;
     display: inline-block;
+    position: fixed;
 }
 .pagelinks
 {
@@ -57,7 +60,5 @@ ul
 }
 main 
 {
-    min-width: 80vh;
-    display: inline-block;
-
+    margin: 0px 200px 0px 350px;
 }
