@@ -1,7 +1,7 @@
 
 .mini
 {
-    border-radius: 180px;
+
 }
 
 button
@@ -73,6 +73,8 @@ section
 .left
 {
     background: linear-gradient(to left, rgb(102, 121, 141), darkslategray);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
 }
 .right
 {
@@ -82,4 +84,8 @@ section
 .screenparts
 {
     font-size: 0%;
+}
+.indicators
+{
+    min-width: 30px;
 }

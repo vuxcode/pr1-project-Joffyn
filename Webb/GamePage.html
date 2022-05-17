@@ -31,11 +31,15 @@
 
             </div>
             <div id="midscreen" class="screenparts">
-                <section class="left"></section>
+                <section class="indicators">
+                    <canvas id="squares" width="30" height="400"></canvas>
+                </section>
+                <section class="left" id="scorepage"><p>hesiub</p></section>
                 <section class="mid"><canvas id="output" width="600" height="600"></canvas></section>
                 <section class="right"><canvas id="mini" class="mini" width="240" height="240"></canvas></section>
             </div>
             <div id="bottomscreen" class="screenparts">
+                <section class="indicators"></section>
                 <section class="left">
                     <button onclick="RandomizeMap()" class="restartbutton">Restart</button>
                 </section>  
@@ -68,6 +72,11 @@
     var miniCanvas = document.getElementById("mini");
     var ctxMini = miniCanvas.getContext("2d");
 
+    var colSquares = document.getElementById("squares");
+    var ctxSquares = colSquares.getContext("2d");
+
+    var scorepage = document.getElementById("scorepage");
+
     var width = canvas.width / 5;
     var height = canvas.height / 5;
     var worldSize = width * height;
@@ -85,8 +94,7 @@
 
     var goals = [];
     var numberOfGoals = 10;
-    var firstGoal = [];
-    var secondGoal = [];
+    var goalColors = ['#e5b42e', "#1bb1de", "#b54584", "#d96720", "#1c0d54","#75ea97","#b30000", "#391818", "#4326e3", "#d9c617"];
 
     var entities = [];
     var tempEntities = [];
@@ -95,18 +103,20 @@
     var input = document.getElementById("userinput");
 
     RandomizeMap();
-    Update("Updateing");
 
 
     function Update(newname)
     {
         //Clears screen and does the light calculation
         ctx.clearRect(0, 0, width, height);
+        ctxSquares.clearRect(0, 0, 30, 400);
         ComputeLight();
+        var score = "";
 
         //Moves the goals around
-        for (var index = 0; index < numberOfGoals; index++) 
+        for (var index = 0; index < goals.length; index++) 
         {
+
             var tempGoal = [goals[index][0], goals[index][1], "goal"];
             var tempDir = Math.random();
             var dir;
@@ -114,6 +124,7 @@
             var distanceFromPlayerX = playerX - goals[index][0];
             var distanceFromPlayerY = playerY - goals[index][1];
 
+            //Testar ifall spelar börjar närma sig
             if (distanceFromPlayerX > 0 && distanceFromPlayerX < 5)
             {
                 dir = "West";
@@ -130,6 +141,7 @@
             {
                 dir = "South";
             }
+            //Ifall spelaren inte är nära används random värdet
             else if (tempDir > 0.25 && tempDir < 0.5)
             {
                 dir = 'North'
@@ -146,14 +158,46 @@
             {
                 dir = 'East';
             }
+            //Testar riktning
+            var dirFromYouX = "";
+            var dirFromYouY = "";
+            if (distanceFromPlayerX > 0)
+            {
+                dirFromYouX = "West of you"
+            }
+            else if (distanceFromPlayerX < 0)
+            {
+                dirFromYouX = "East of you";
+            }
+            if (distanceFromPlayerY > 0)
+            {
+                dirFromYouY = "North of you"
+            }
+            else if (distanceFromPlayerY < 0)
+            {
+                dirFromYouY = "South of you"
+            }
+            if (Math.abs(distanceFromPlayerX) > Math.abs(distanceFromPlayerY))
+            {
+                score += dirFromYouX;
+            }
+            else
+            {
+                score += dirFromYouY;
+            }
+            
             
            var colResult = MoveUnit(tempGoal, dir);
-           if (colResult[2])
+           if (colResult[3])
            {
                goals[index][0] = colResult[0];
                goals[index][1] = colResult[1];
            }   
+            ctxSquares.fillStyle = goals[index][2];
+            ctxSquares.fillRect(10, (20 * index) + 5,10, 10);
+            score += "<br>";
         }
+        scorepage.innerHTML = score;
 
         for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
         {
@@ -168,7 +212,7 @@
                 {
                     if (entities[x][y] == "goal")
                     {
-                        ctx.fillStyle = 'green';
+                        ctx.fillStyle = goals[GetIndex(x, y, goals)][2];
                     }
                     else if (entities[x][y] == "solid")
                     {
@@ -276,7 +320,6 @@
         exploredTiles = [];
         entities = [];
         goals = [];
-
         //Skapar noise
         for (let x = 0; x < width; x++) 
         {
@@ -314,23 +357,12 @@
         }
         entities[playerX][playerY] = "player";
 
-        // firstGoal = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
-        // secondGoal = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
-
-        // while (entities[firstGoal[0]][firstGoal[1]] == "solid" || entities[secondGoal[0]][secondGoal[1]] == "solid")
-        // {
-        //     firstGoal = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
-        //     secondGoal = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
-        // }
-        // entities[firstGoal[0]][firstGoal[1]] = "firstgoal"
-        // entities[secondGoal[0]][secondGoal[1]] = "secondgoal";
-
         for (var index = 0; index < numberOfGoals; index++) 
         {
-            var testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
+            var testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height), goalColors[index]];
             while (entities[testPos[0]][testPos[1]] != "empty")
             {
-                testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height)];
+                testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height), goalColors[index]];
             }
             goals[index] = testPos;
             entities[testPos[0]][testPos[1]] = "goal";
@@ -367,10 +399,35 @@
     function UpdatePlayer(direction)
     {
         var colResult = MoveUnit([playerX, playerY, "player"], direction);
-        if (colResult[2])
+
+        if (colResult[2] != "solid")
         {
+
+            if (colResult[2] == "goal")
+            {
+                var i;
+                for (var index = 0; index < goals.length; index++) 
+                {
+                    if (goals[index][0] == colResult[0] && goals[index][1] == colResult[1])
+                    {
+                        goals.splice(index, 1);
+                        entities[colResult[0]][colResult[1]] = "player";
+                        entities[colResult[0]][colResult[1]] = "empty";
+                        console.log("attacked");
+                    }
+                }
+
+
+                
+
+
+                // goals[test] = [];
+                // numberOfGoals--;
+
+            }
             playerX = colResult[0];
             playerY = colResult[1];
+            console.log(playerX, playerY);
             Update();
         }
     }
@@ -404,15 +461,26 @@
         {
             entities[tempPosX][tempPosY] = unit[2];
             entities[unit[0]][unit[1]] = "empty";
+            // unit[0] = tempPosX;
+            // unit[1] = tempPosY;
 
-            return [tempPosX, tempPosY, true];
+            return [tempPosX, tempPosY, entities[tempPosX][tempPosY], true];
         }
         else
         {
-            return [unit[0], unit[1], false];
+            return [tempPosX, tempPosY, entities[tempPosX][tempPosY], false];
         }
     }
-
+    function GetIndex(x, y, array)
+    {
+        for (var index = 0; index < array.length; index++) 
+        {
+            if (array[index][0] == x && array[index][1] == y)
+            {
+                return index;
+            }
+        }
+    }
 
 
     function ComputeLight()
