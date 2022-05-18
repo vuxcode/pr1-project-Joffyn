@@ -79,7 +79,10 @@ section
 .right
 {
     background: linear-gradient(to right, rgb(102, 121, 141), darkslategray);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
     width: 240px;
+    margin: auto;
 }
 .screenparts
 {

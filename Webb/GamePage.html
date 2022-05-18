@@ -36,7 +36,11 @@
                 </section>
                 <section class="left" id="scorepage"><p>hesiub</p></section>
                 <section class="mid"><canvas id="output" width="600" height="600"></canvas></section>
-                <section class="right"><canvas id="mini" class="mini" width="240" height="240"></canvas></section>
+                <section class="right">
+                    <canvas id="mini" class="mini" width="240" height="240">
+                    </canvas>
+                    <p id="playerposition">urs</p>
+                </section>
             </div>
             <div id="bottomscreen" class="screenparts">
                 <section class="indicators"></section>
@@ -76,6 +80,7 @@
     var ctxSquares = colSquares.getContext("2d");
 
     var scorepage = document.getElementById("scorepage");
+    var playerpage = document.getElementById("playerposition");
 
     var width = canvas.width / 5;
     var height = canvas.height / 5;
@@ -177,7 +182,7 @@
             {
                 dirFromYouY = "South of you"
             }
-            if (Math.abs(distanceFromPlayerX) > Math.abs(distanceFromPlayerY))
+            if (Math.abs(distanceFromPlayerX) < Math.abs(distanceFromPlayerY))
             {
                 score += dirFromYouX;
             }
@@ -273,6 +278,9 @@
                 ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
             }
         }
+
+        playerpage.innerHTML = playerX + "x, " + playerY + "y";
+        
     }
 
     function CellularAutomata(filter)
@@ -405,7 +413,6 @@
 
             if (colResult[2] == "goal")
             {
-                var i;
                 for (var index = 0; index < goals.length; index++) 
                 {
                     if (goals[index][0] == colResult[0] && goals[index][1] == colResult[1])
@@ -413,17 +420,8 @@
                         goals.splice(index, 1);
                         entities[colResult[0]][colResult[1]] = "player";
                         entities[colResult[0]][colResult[1]] = "empty";
-                        console.log("attacked");
                     }
                 }
-
-
-                
-
-
-                // goals[test] = [];
-                // numberOfGoals--;
-
             }
             playerX = colResult[0];
             playerY = colResult[1];
@@ -514,9 +512,7 @@
             if (Wall(tile) || Symmetric(row, tile))
             {
                 var visTile = QuadTransform(tile);
-                //visibleTiles.push(visTile[0] * height + visTile[1]);
                 exploredTiles[visTile[0]][visTile[1]] = "visible";
-                //visibleTiles.push(visTile);
             }
             if (prevTile && Wall(prevTile) && Floor(tile))
             {
