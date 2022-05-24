@@ -6,26 +6,32 @@
         <link href="GamePage.css" rel="stylesheet">
     </head>
     <body>
-        <header>
+        <div class="pagetop">
 
-        </header>
-        <div class="linkbar">
-            <ul class="linklist">
-                <li class="pagelinks"><a href="DefaultPage.html">Home</a></li>
-                <li class="pagelinks"><a href="Gamepage.html">Game</a></li>
-                <li class="pagelinks"><a href="AboutPage.html">About</a></li>
-            </ul>
+
+            <header>
+    
+            </header>
+            <div class="linkbar">
+                <ul class="linklist">
+                    <li class="pagelinks"><a href="DefaultPage.html" class="link">Home</a></li>
+                    <li class="pagelinks"><a href="Gamepage.html" class="link">Game</a></li>
+                    <li class="pagelinks"><a href="AboutPage.html" class="link">About</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="sidebar">
-            <ol>
-                <li>thing</li>
-                <li>greg</li>
-                <li>thing</li>
-                <li>greg</li>
-                <li>thing</li>
-                <li>greg</li>
-            </ol>
-        </div>
+                <div class="sidebuffer"></div>
+                <div class="sidebar">
+                    <ul> 
+                        <h3>Topics</h3>
+                        <li class="sidelinks">
+                            <a href="#output">Game</a>
+                        </li>
+                        <li class="sidelinks">
+                            <a href="#contactinfo">Contact and about</a>
+                        </li>
+                    </ul>
+                </div>
         <main>
             <div id="topscreen" class="screenparts">
 
@@ -37,7 +43,7 @@
                 <section class="left" id="scorepage"><p>hesiub</p></section>
                 <section class="mid">
                     <!-- <p class="win" id="winmessage">34343sdfgsdfgjsdjfbgusikdfgvsdu</p> -->
-                    <canvas id="output" class="outmessage" width="600" height="600">dsuitgbhdufygbdufkgyvbfud</canvas>
+                    <canvas id="output" width="600" height="600">dsuitgbhdufygbdufkgyvbfud</canvas>
                     
                 </section>
                 <section class="right">
@@ -143,6 +149,7 @@
 
                 var distanceFromPlayerX = playerX - goals[index][0];
                 var distanceFromPlayerY = playerY - goals[index][1];
+
 
                 //Testar ifall spelar börjar närma sig
                 if (distanceFromPlayerX > 0 && distanceFromPlayerX < 5)
@@ -320,7 +327,7 @@
             ctx.fillStyle = 'black';
             ctx.fillText("You Win!", 150, 250);
             ctx.font = "50px Arial";
-            ctx.fillText("It took you: " + numberOfTurns + " turns.", 75, 325);
+            ctx.fillText("It took you: " + numberOfTurns + " turns", 75, 325);
             var endOfGame = Date.now() - startOfGame;
             ctx.fillText("and " + endOfGame / 1000 + " Seconds", 75, 400);
             ctxMini.fillStyle = 'black';

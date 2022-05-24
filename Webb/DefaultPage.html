@@ -3,24 +3,65 @@
     <head>
         <!-- <link href="GamePage.css" rel="stylesheet"> -->
         <link href="Default.css" rel="stylesheet">
+        <link href="HomePage.css" rel="stylesheet">
     </head>
     <body>
+    <div class="pagetop">
+
+
         <header>
 
         </header>
         <div class="linkbar">
             <ul class="linklist">
-                <li class="pagelinks"><a href="DefaultPage.html">Home</a></li>
-                <li class="pagelinks"><a href="Gamepage.html">Game</a></li>
-                <li class="pagelinks"><a href="AboutPage.html">About</a></li>
+                <li class="pagelinks"><a href="DefaultPage.html" class="link">Home</a></li>
+                <li class="pagelinks"><a href="Gamepage.html" class="link">Game</a></li>
+                <li class="pagelinks"><a href="AboutPage.html" class="link">About</a></li>
             </ul>
         </div>
-        <div class="mainwrapper">
+    </div>
+            <div class="sidebuffer"></div>
             <div class="sidebar">
-
+                <ul> 
+                    <h3>Topics</h3>
+                    <li class="sidelinks">
+                        <a href="#output">Game</a>
+                    </li>
+                    <li class="sidelinks">
+                        <a href="#contactinfo">Contact and about</a>
+                    </li>
+                </ul>
             </div>
             <main>
+                <div class="Card">
+                    <img src="Images/4cbd4b49bc103ac602581784e1c7f05c.png" id="output" width="400" ></img>
+                    <div class="CardText">
+                        <h2>Catch-Colored-Candy-Cubes</h2>
+                        <p>This is a simple game where you can navigate a 2D enviroment
+                             with obstacles to try and catch different colored squares that
+                              try to run away from you.
+                            The game features a way to calculate field of view called "Symmetric Shadowcasting". 
+                        The implementation is based on Albert Fords version from <a href="https://www.albertford.com/shadowcasting/">--his website.--</a></p>
+                    </div>
+                </div>
+                <div class="Card" id="contactinfo">
+                    <img src="Images/jibbitz-question-mark.jpg">
+                    <div class="CardText">
+                        <h2>Contact and about</h2>
+                        <p>Text About Card! It's an English breakfast!
+                             More Text!</p>
+                    </div>
+    
+                </div>
+                <div class="Card">
+                    <img src="Pictures/DSC_0328.jpg">
+                    <div class="CardText">
+                        <p>Text About Card! It's a nice scenery!
+                             More Text!</p>
+                    </div>
+    
+
+                </div>
             </main>
-        </div>
     </body>
 </html>

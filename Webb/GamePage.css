@@ -96,10 +96,9 @@ span
 {
     color: greenyellow;
 }
-.outmessage
+main 
 {
-    font-size: large;
-    vertical-align: top;
-    color: antiquewhite;
-    overflow: hidden;
+    margin: 0 auto;
+    width: 1090px;
+    margin: 132px 0px 0px 400px;
 }
