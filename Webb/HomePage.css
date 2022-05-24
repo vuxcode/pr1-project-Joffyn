@@ -1,19 +1,21 @@
 
 main 
 {
-    width:900px;
+    width:450px;
     margin: 132px 0px 0px 600px;
 }
 
 .Card
 {
     margin: auto;
-    display: inline-block;
+    margin-bottom: 15px;
+    display: block;
     border-style: groove;
-    border-color: #1d2f92;
-    background-color: rgb(29, 104, 189);
+    border-color: #222950;
+    background-color: rgb(70, 106, 148);
     border-width: thick;
     border-radius: 15px;
+    width: 400px;
 }
 .CardText
 {
@@ -25,4 +27,17 @@ img
 {
     border-radius: 15px;
     width: 390px;
+}
+p
+{
+    width: 300px;
+    background-color: #3b5d91;
+    border-radius: 8px;
+}
+h2
+{
+    text-align: center;
+    margin-bottom: 10px;
+    background:radial-gradient(rgb(69, 93, 117), rgb(70, 106, 148));
+    border-radius: 30px;
 }

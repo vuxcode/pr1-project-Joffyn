@@ -25,43 +25,59 @@
                 <ul> 
                     <h3>Topics</h3>
                     <li class="sidelinks">
-                        <a href="#output">Game</a>
+                        <a href="#game">Game</a>
                     </li>
                     <li class="sidelinks">
-                        <a href="#contactinfo">Contact and about</a>
+                        <a href="#randomgenerator">Random generator</a>
+                    </li>
+                    <li class="sidelinks">
+                        <a href="#shadowcasting">Shadowcasting</a>
                     </li>
                 </ul>
             </div>
             <main>
-                <div class="Card">
-                    <img src="Images/4cbd4b49bc103ac602581784e1c7f05c.png" id="output" width="400" ></img>
+                <div class="Card" id="game">
+                    <img src="Images/5b6f7abf6ba574883e9836cdaea5d5b6.png">
                     <div class="CardText">
-                        <h2>Catch-Colored-Candy-Cubes</h2>
-                        <p>This is a simple game where you can navigate a 2D enviroment
-                             with obstacles to try and catch different colored squares that
-                              try to run away from you.
-                            The game features a way to calculate field of view called "Symmetric Shadowcasting". 
-                        The implementation is based on Albert Fords version from <a href="https://www.albertford.com/shadowcasting/">--his website.--</a></p>
-                    </div>
-                </div>
-                <div class="Card" id="contactinfo">
-                    <img src="Images/jibbitz-question-mark.jpg">
-                    <div class="CardText">
-                        <h2>Contact and about</h2>
-                        <p>Text About Card! It's an English breakfast!
-                             More Text!</p>
-                    </div>
-    
-                </div>
-                <div class="Card">
-                    <img src="Pictures/DSC_0328.jpg">
-                    <div class="CardText">
-                        <p>Text About Card! It's a nice scenery!
-                             More Text!</p>
+                        <h2>The game</h2>
+                        <p>This is a simple game where you can navigate a 2D-grid enviroment
+                            with obstacles to try and catch different colored squares that
+                            try to run away from you. <br> <br>
+                            It features a UI which gives you handy information as well.
+                            It tells you where you are in the world, both through a minimap, but also gives your coordinates.
+                            You can tell how many squares there are in the game and which direction they are in, as well as if they're close or not.
+                            If you catch them they will then be added under your location information. 
+                            There are 4 buttons for moving around in the world and another one for restarting.
+                            <br><br>
+                            When you catch 5 of them you win!
+                        </p>
                     </div>
     
 
                 </div>
+                <div class="Card" id="randomgenerator">
+                    <img src="Images/f405c7abdc7c0bb967b56630a259e5df.gif" width="400" ></img>
+                    <div class="CardText">
+                        <h2>Randomly generated enviroments</h2>
+                        <p>
+                            The enviroments are randomly generated using cellular automata.
+                            This means that it randomly adds obstacles all over the given game-area.
+                            It then checks each square in the grid if it is solid and then checks to see if its neighbours are solid.
+                            If too few neighbours are solid it becomes an empty square. <br> <br>
+                            This is a fairly simple way to create a randomly generated enviroment that isn't too random.
+                        </p>
+                    </div>
+                </div>
+                <div class="Card" id="shadowcasting">
+                    <img src="Images/31b4ec828a4dcbf91c7d15f84aeb4892.gif">
+                    <div class="CardText">
+                        <h2>Shadowcasting</h2>
+                        <p>The game features a way to calculate field of view called "Symmetric Shadowcasting". 
+                            The implementation is based on Albert Fords version from <a href="https://www.albertford.com/shadowcasting/">--his website.--</a></p>
+                    </div>
+    
+                </div>
+
             </main>
     </body>
 </html>
