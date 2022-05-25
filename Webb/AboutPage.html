@@ -3,6 +3,7 @@
     <head>
         <!-- <link href="GamePage.css" rel="stylesheet"> -->
         <link href="Default.css" rel="stylesheet">
+        <link href="AboutPage.css" rel="stylesheet">
     </head>
     <body>
         <div class="pagetop">
@@ -20,19 +21,24 @@
             </div>
         </div>
                 <div class="sidebuffer"></div>
-                <div class="sidebar">
-                    <ul> 
-                        <h3>Topics</h3>
-                        <li class="sidelinks">
-                            <a href="#output">Game</a>
-                        </li>
-                        <li class="sidelinks">
-                            <a href="#contactinfo">Contact and about</a>
-                        </li>
-                    </ul>
-                </div>
+            
             <main>
+                <div class="about">
+                    <img src="Images/me.png" width="398">
+                    <h3 class="pictext">Picture of me</h3>
+                    <p>My name is Christopher Nylen and this website is made for my end project in webdevelopment 1 and programming 1. <br>
+                        Write a message underneath if you have any questions.</p>
+                </div>
                 <form action="" method="POST">
+                    <fieldset>
+
+                        <textarea id="message" name="message" rows="5">Write your message here</textarea>
+                        <legend>Contact me</legend>
+                        <label for="email">Your email here</label>
+ 
+                        <input type="email">
+                    </fieldset>
+                    <input type="submit" value="Send Email">
 
                 </form>
             </main>
