@@ -38,7 +38,7 @@ legend
 {
     display: inline-block;
     border-style: solid;
-    background-color: rgb(101, 117, 134);
+    background-color: rgb(133 149 167);
     border-color: #222950;
     border-width: thin;
     margin: 15px 0px;
@@ -55,5 +55,6 @@ img
 }
 p
 {
-    background: linear-gradient(to top ,rgb(69, 79, 90), rgb(101, 117, 134));
+    
+    background: linear-gradient(to top ,rgb(101, 117, 134), rgb(133 149 167));
 }
