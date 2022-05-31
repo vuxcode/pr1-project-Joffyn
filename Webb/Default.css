@@ -15,7 +15,7 @@ header
     text-align: center;
     margin: auto;
     padding: 40px 0px;
-    background: linear-gradient(to top, slategray, darkslategray);
+    background: linear-gradient(to top, rgb(149, 162, 175), slategray);
 }
 .linklist
 {
@@ -24,7 +24,7 @@ header
 .linkbar
 {
     padding: 25px 10px;
-    background-color:slategray;
+    background-color:rgb(149, 162, 175);
 
     border-width: 0px;
     border-bottom: thick;
@@ -39,7 +39,7 @@ header
     display: inline-block;
     position: fixed;
     margin-top: 200px;
-    background-color: rgb(114, 136, 145);
+    background-color: rgb(149, 162, 175);
     padding: 15px;
     border-radius: 15px;
     border-style:solid;

@@ -12,7 +12,7 @@ main
     display: block;
     border-style: groove;
     border-color: #222950;
-    background-color: rgb(70, 106, 148);
+    background-color: rgb(116, 143, 173);
     border-width: thick;
     border-radius: 15px;
     width: 400px;
@@ -31,13 +31,14 @@ img
 p
 {
     width: 300px;
-    background-color: #3b5d91;
-    border-radius: 8px;
+    background-color: #6b81a3;
+    border-radius: 30px;
+    padding: 10px;
 }
 h2
 {
     text-align: center;
     margin-bottom: 10px;
-    background:radial-gradient(rgb(69, 93, 117), rgb(70, 106, 148));
+    background:radial-gradient(rgb(133 161 189), rgb(70, 106, 148));
     border-radius: 30px;
 }
