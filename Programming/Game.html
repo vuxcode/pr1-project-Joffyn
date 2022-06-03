@@ -1,0 +1,305 @@
+
+
+
+<!-- <textarea id="output">meme</textarea> -->
+<canvas id="test" width="500" height="500"></canvas>
+<pre id="output"></pre>
+<div class="minimap" id="mini">mini</div>
+<style>
+                *
+            {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+    pre
+    {
+        font-family: 'Courier New', Courier, monospace;
+        font-size:16px;
+        font-weight:bold;
+        letter-spacing:10px;
+        background:black;
+        color:white;
+        line-height: 16px;
+        padding: 5px 0px 5px 10px;
+        display: inline-block;
+        border-style: groove;
+        border-color: gray;
+        border-width: thick;
+        margin: auto;
+    }
+    button
+    {
+        padding: 25px 50px;
+        display: inline-block;
+    }
+    .minimap
+    {
+        font-family: 'Courier New', Courier, monospace;
+        font-size:8px;
+        font-weight:bold;
+        letter-spacing:5px;
+        background: red;
+        color:blue;
+        line-height: 8px;
+        display: inline-block;
+    }
+</style>
+    
+
+<script>
+    var width = 64;
+    var height = 64;
+    var worldSize = width * height;
+
+    var rect = 10;
+    var canvas = document.getElementById("test");
+    var ctx = canvas.getContext("2d");
+    
+    var playerX = width / 2;
+    var playerY = height / 2;
+    var obstacles = [];
+    var tempObstacles = [];
+
+    var screenSize = 10;
+
+ 
+
+    var output = document.getElementById("output");
+    var minimap = document.getElementById("mini");
+    var input = document.getElementById("userinput");
+
+    RandomizeMap();
+    Update("Updateing");
+
+
+    function Update(newname)
+    {
+        var minimap = "";
+        var map = "";
+        ctx.clearRect(0, 0, width, height);
+
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                if (y % height == 0)
+                {
+                  //map += "\n";
+                  minimap += "<br>";
+                }
+                if (playerX == x && playerY == y)
+                {
+                    minimap += '#';
+                }
+                else if (obstacles[x * height + y] == 1)
+                {
+                    minimap += 'O';
+                }
+                else
+                {
+                    minimap += '-';
+                }
+            }
+        }
+        var screenEnd = 0;
+        for (let x = playerX - screenSize; x < playerX + screenSize; x++) 
+        {
+            for (let y = playerY - screenSize; y < playerY + screenSize; y++) 
+            {
+                if (screenEnd == screenSize * 2)
+                {
+                  map += "<br>";
+                  screenEnd = 0;
+                }
+                if (playerX == x && playerY == y)
+                {
+                    map += '#';
+                    ctx.fillStyle = 'red';
+                }
+                else if (obstacles[x * height + y] == 1)
+                {
+                    map += 'O';
+                    ctx.fillStyle = 'blue';
+                }
+                else
+                {
+                    map += '-';
+                    ctx.fillStyle = 'black';
+                }
+                screenEnd++;
+
+                ctx.fillRect(x * rect, y * rect, rect, rect);
+            }
+
+        }
+        output.innerHTML = map;
+        mini.innerHTML = minimap;
+    }
+
+    function CellularAutomata(filter)
+    {
+        for (let x = 0; x < width; x++) 
+        {
+            for (let y = 0; y < height; y++) 
+            {
+                var check = 0;
+                if (tempObstacles[(x * height + y) + 1] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) + height] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) - 1] == 1)
+                {
+                    check++;
+                }
+                if (tempObstacles[(x * height + y) - height] == 1)
+                {
+                    check++;
+                }
+                if (check >= filter) 
+                {
+                    continue;
+                }
+                obstacles[x * height + y] = 0;
+            } 
+        }
+        for (let index = 0; index < width * height; index++) 
+        {
+            tempObstacles[index] = obstacles[index];         
+        }
+
+    }
+    function RandomizeMap()
+    {
+        //Skapar noise
+        for (let index = 0; index < width * height; index++) 
+        {
+            var value = Math.random();
+            obstacles[index] = value;
+            tempObstacles[index] = value;
+
+            if (obstacles[index] < 0.5)
+            {
+                obstacles[index] = 1;
+                tempObstacles[index] = 1;
+            }
+            else
+            {
+                obstacles[index] = 0;
+                tempObstacles[index] = 0;
+            }
+        }
+
+        obstacles[0] = 0.5;
+
+
+        CellularAutomata(2);
+        CellularAutomata(1);
+
+        // while (obstacles[player] != 0)
+        // {
+        //     player = Math.floor(Math.random() * width * height);
+        // }
+
+        Update();
+    }
+    function Wrapping(x, y)
+    {
+
+        var newX = x;
+        var newY = y;
+
+        if (x > width)
+        {
+            newX = x - (width + 1);
+        }
+        else if (x < 0)
+        {
+            newX = x + (width + 1);
+        }
+        if (y > height)
+        {
+            newY = y - (height + 1);
+        }
+        else if (y < 0)
+        {
+            newY = y + (height + 1);
+        }
+        return [newX, newY];
+    }
+    function MovePlayer(direction)
+    {
+        // if (direction == 1)
+        // {
+        //     if (obstacles[player + height] != 1) 
+        //     {
+        //         if ((player + height) > width * height && obstacles[player - (width * height)] != 1)
+        //         {
+        //             player -= ((width * height) - height);
+        //         }
+        //         else
+        //         {
+        //             player += height;
+        //         }
+        //     }
+        // }
+        // else if (direction == 2)
+        // {
+        //     if (obstacles[player + 1] != 1) 
+        //     {
+        //         player += 1;
+        //     }
+        // }
+        // else if (direction == 3)
+        // {
+        //     if (obstacles[player - height] != 1) 
+        //     {
+        //         if ((player - height) < 0 && obstacles[player + (width * height)] != 1)
+        //         {
+        //             player += (width * height) - height;
+        //         }
+        //         else
+        //         {
+        //             player -= height;
+        //         }
+        //     }
+        // }
+        // else if (direction == 4)
+        // {
+        //     if (obstacles[player - 1] != 1) 
+        //     {       
+        //         player -= 1;
+        //     }
+        // }
+        if (direction == "South")
+        {
+            playerX += 1;   
+        }
+        else if (direction == "East")
+        {
+             playerY += 1;  
+        }
+        else if (direction == "North")
+        {
+             playerX -= 1;
+        }
+        else if (direction == "West")
+        {
+   
+            playerY -= 1;
+        }
+        [playerX, playerY] = Wrapping(playerX, playerY);
+        console.log(playerX, playerY);
+        Update();
+    }
+</script>
+
+<button onclick="RandomizeMap()">Randomize</button>
+<button onclick="MovePlayer('North')">Move North</button>
+<button onclick="MovePlayer('South')">Move South</button>
+<button onclick="MovePlayer('West')">Move West</button>
+<button onclick="MovePlayer('East')">Move East</button>

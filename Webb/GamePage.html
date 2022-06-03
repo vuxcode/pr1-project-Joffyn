@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- <link href="GamePage.css" rel="stylesheet"> -->
+        <meta charset="utf-8"/>
+        <link href="Default.css" rel="stylesheet">
+        <link href="GamePage.css" rel="stylesheet">
+        <title>Game Page</title>
+    </head>
+    <body>
+        <div class="pagetop">
+
+
+            <header>
+    
+            </header>
+            <div class="linkbar">
+                <ul class="linklist">
+                    <li class="pagelinks"><a href="DefaultPage.html" class="link">Home</a></li>
+                    <li class="pagelinks"><a href="GamePage.html" class="link">Game</a></li>
+                    <li class="pagelinks"><a href="AboutPage.html" class="link">About</a></li>
+                </ul>
+            </div>
+        </div>
+                <div class="sidebuffer"></div>
+
+        <main>
+            <div id="topscreen" class="screenparts">
+
+            </div>
+            <div id="midscreen" class="screenparts">
+                <section class="indicators">
+                    <canvas id="squares" width="30" height="400"></canvas>
+                </section>
+                <section class="left" id="scorepage"><p>hesiub</p></section>
+                <section class="mid">
+                    <!-- <p class="win" id="winmessage">34343sdfgsdfgjsdjfbgusikdfgvsdu</p> -->
+                    <canvas id="output" width="600" height="600">dsuitgbhdufygbdufkgyvbfud</canvas>
+                    
+                </section>
+                <section class="right">
+                    <canvas id="mini" class="mini" width="240" height="240">
+                    </canvas>
+                    <p id="playerposition">urs</p>
+                    <canvas id="collected" width="240" height="240">          
+                    </canvas>
+                </section>
+            </div>
+            <div id="bottomscreen" class="screenparts">
+                <section class="indicators"></section>
+                <section class="left">
+                    <button onclick="RandomizeMap()" class="restartbutton">Restart</button>
+                </section>  
+                <section class="mid">
+                    <button onclick="UpdatePlayer('North')" class="topbutton">Move North</button>
+                    <div class="divider">
+                        <button onclick="UpdatePlayer('West')" class="leftbutton">Move West</button>
+                        <button onclick="UpdatePlayer('East')" class="rightbutton">Move East</button>
+                    </div>
+                    <button onclick="UpdatePlayer('South')" class="bottombutton">Move South</button>
+                </section>
+                <section class="right">
+                </section>
+
+            </div>
+
+
+
+        </main>
+        <script>
+
+
+            var rect = 20;
+            var miniRect = 2;
+            var canvas = document.getElementById("output");
+            var ctx = canvas.getContext("2d");
+        
+            var miniCanvas = document.getElementById("mini");
+            var ctxMini = miniCanvas.getContext("2d");
+        
+            var colSquares = document.getElementById("squares");
+            var ctxSquares = colSquares.getContext("2d");
+            
+            var colCollected = document.getElementById("collected");
+            var ctxCollected = colCollected.getContext("2d");
+        
+            var scorepage = document.getElementById("scorepage");
+            var playerpage = document.getElementById("playerposition");
+        
+            var width = canvas.width / 5;
+            var height = canvas.height / 5;
+            var worldSize = width * height;
+        
+            var directions = ["North","East","South","West"];
+            // var player = new Vector(playerX, playerY);
+            var quadrant = [];
+            var visibleTiles = [];
+            var exploredTiles = [];
+            
+            
+            var playerX;
+            var playerY;
+            var numberOfTurns;
+            var startOfGame = Date.now();
+        
+        
+            var goals = [];
+            var numberOfGoals = 10;
+            var goalColors = ['#e5b42e', "#1bb1de", "#b54584", "#d96720", "#1c0d54","#75ea97","#b30000", "#391818", "#4326e3", "#d9c617"];
+            var collectedGoals = [];
+        
+            var entities = [];
+            var tempEntities = [];
+        
+            var screenSize = 15;
+            var input = document.getElementById("userinput");
+        
+            RandomizeMap();
+        
+        
+            function Update(newname)
+            {
+                //Clears screen and does the light calculation
+                ctx.clearRect(0, 0, width, height);
+                ctxCollected.clearRect(0, 0, 240, 240);
+                ctxSquares.clearRect(0, 0, 30, 400);
+                ComputeLight();
+                var score = "";
+        
+                //Moves the goals around
+                if (collectedGoals.length < numberOfGoals / 2)
+                {
+                    for (var index = 0; index < goals.length; index++) 
+                    {
+        
+                        var tempGoal = [goals[index][0], goals[index][1], "goal"];
+                        var tempDir = Math.random();
+                        var dir;
+        
+                        var distanceFromPlayerX = playerX - goals[index][0];
+                        var distanceFromPlayerY = playerY - goals[index][1];
+        
+        
+        
+                        //Testar ifall spelar börjar närma sig
+                        if (distanceFromPlayerX > 0 && distanceFromPlayerX < 5)
+                        {
+                            dir = "West";
+                        }
+                        else if (distanceFromPlayerX < 0 && distanceFromPlayerX > -5)
+                        {
+                            dir = "East";
+                        }
+                        else if (distanceFromPlayerY > 0 && distanceFromPlayerY < 5)
+                        {
+                            dir = "North";
+                        }
+                        else if (distanceFromPlayerY < 0 && distanceFromPlayerY > -5)
+                        {
+                            dir = "South";
+                        }
+                        //Ifall spelaren inte är nära används random värdet
+                        else if (tempDir > 0.25 && tempDir < 0.5)
+                        {
+                            dir = 'North'
+                        }
+                        else if (tempDir > 0.5 && tempDir < 0.75)
+                        {
+                            dir = 'South';
+                        }
+                        else if (tempDir > 0.75)
+                        {
+                            dir = 'West';
+                        }
+                        else
+                        {
+                            dir = 'East';
+                        }
+                        //Testar riktning
+                        var dirFromYouX = "";
+                        var dirFromYouY = "";
+                        var bestValue;
+                        if (distanceFromPlayerX > 0)
+                        {
+                            dirFromYouX = "West of you"
+                        }
+                        else if (distanceFromPlayerX < 0)
+                        {
+                            dirFromYouX = "East of you";
+                        }
+                        if (distanceFromPlayerY > 0)
+                        {
+                            dirFromYouY = "North of you"
+                        }
+                        else if (distanceFromPlayerY < 0)
+                        {
+                            dirFromYouY = "South of you"
+                        }
+                        if (Math.abs(distanceFromPlayerX) > Math.abs(distanceFromPlayerY))
+                        {
+                            score += dirFromYouX;
+                            bestValue = Math.abs(distanceFromPlayerX);
+                        }
+                        else
+                        {
+                            score += dirFromYouY;
+                            bestValue = Math.abs(distanceFromPlayerY);
+                        }
+                        var asNum = Number(score);
+                        if (bestValue < 25)
+                        {
+                            score += "<span> Close</span>";
+                        }
+                        
+                        
+                    var colResult = MoveUnit(tempGoal, dir);
+                    if (colResult[3])
+                    {
+                        goals[index][0] = colResult[0];
+                        goals[index][1] = colResult[1];
+                    }   
+                        ctxSquares.fillStyle = goals[index][2];
+                        ctxSquares.fillRect(10, (20 * index) + 5,10, 10);
+                        console.log(bestValue);
+                        score += "<br>";
+                    }
+                    scorepage.innerHTML = score;
+        
+                    for (let x = playerX - screenSize, screenX = 0; x < playerX + screenSize, screenX < width; x++, screenX++) 
+                    {
+                        for (let y = playerY - screenSize, screenY = 0; y < playerY + screenSize, screenY < height; y++, screenY++) 
+                        {
+                            [x, y] = Wrapping(x, y);
+                            if (playerX == x && playerY == y)
+                            {
+                                ctx.fillStyle = 'red';
+                            }
+                            else if (exploredTiles[x][y] == "visible")
+                            {
+                                if (entities[x][y] == "goal")
+                                {
+                                    ctx.fillStyle = goals[GetIndex(x, y, goals)][2];
+                                }
+                                else if (entities[x][y] == "solid")
+                                {
+                                    ctx.fillStyle = 'darkslategray';
+                                }
+                                else
+                                {
+                                    ctx.fillStyle = 'white';
+                                }
+                                exploredTiles[x][y] = "explored";
+        
+                            }
+                            else if (exploredTiles[x][y] == "explored")
+                            {
+                                if (entities[x][y] == "solid")
+                                {
+                                    ctx.fillStyle = '#5c6772';
+                                }
+                                else
+                                {
+                                    ctx.fillStyle = 'lightslategray';
+                                    
+                                }
+                            }
+                            else
+                            {
+                                ctx.fillStyle = 'black';
+                            }
+                            ctx.fillRect(screenX * rect, screenY * rect, rect, rect);
+                            
+                        }
+                    }
+                    //Minimap
+                    for (let x = 0; x < width; x++) 
+                    {
+                        for (let y = 0; y < height; y++) 
+                        {
+                            if (playerX == x && playerY == y)
+                            {
+                                ctxMini.fillStyle = 'red';
+                            }
+                            else if (exploredTiles[x][y] == "explored")
+                            {
+                                if (entities[x][y] == "solid")
+                                {
+                                    ctxMini.fillStyle = 'gray';
+                                }
+                                else
+                                {
+                                    ctxMini.fillStyle = 'white'
+                                }
+                            }
+                            else
+                            {
+                                ctxMini.fillStyle = 'black';
+                            }
+        
+                            ctxMini.fillRect(x * miniRect, y * miniRect, miniRect, miniRect);
+                        }
+                    }
+                    playerpage.innerHTML = "<span>Collect " + numberOfGoals / 2 + " Squares!</span> <br>"
+                    playerpage.innerHTML += "Player position: <br>" +  playerX + "x, " + playerY + "y";
+                    playerpage.innerHTML += "<br> Collected Squares:";
+                    for (var index = 0; index < collectedGoals.length; index++) 
+                    {
+                        ctxCollected.fillStyle = collectedGoals[index][2];
+                        ctxCollected.fillRect(25 * index, 10 ,20, 20);
+                    }
+        
+                }
+                else
+                {
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, 600, 600);
+                    ctx.font = "70px Arial";
+                    ctx.fillStyle = 'black';
+                    ctx.fillText("You Win!", 150, 250);
+                    ctx.font = "50px Arial";
+                    ctx.fillText("It took you: " + numberOfTurns + " turns", 75, 325);
+                    var endOfGame = Date.now() - startOfGame;
+                    ctx.fillText("and " + endOfGame / 1000 + " Seconds", 75, 400);
+                    ctxMini.fillStyle = 'black';
+                    ctxMini.fillRect(0, 0, 240, 240);
+        
+                    playerpage.innerHTML = "";
+                    scorepage.innerHTML = "";
+        
+                }
+                numberOfTurns++;
+            }
+        
+            function CellularAutomata(filter)
+            {
+                for (let x = 1; x < width - 1; x++) 
+                {
+                    for (let y = 0; y < height; y++) 
+                    {
+                        var check = 0;
+                        if (tempEntities[x + 1][y] == "solid")
+                        {
+                            check++;
+                        }
+                        if (tempEntities[x][y + 1] == "solid")
+                        {
+                            check++;
+                        }
+                        if (tempEntities[x - 1][y] == "solid")
+                        {
+                            check++;
+                        }
+                        if (tempEntities[x][y - 1] == "solid")
+                        {
+                            check++;
+                        }
+                        if (check >= filter) 
+                        {
+                            continue;
+                        }
+                        entities[x][y] = "empty";
+                    } 
+                }
+                for (let x = 0; x < width; x++) 
+                {
+                    for (let y = 0; y < height; y++)
+                    {
+                        tempEntities[x][y] = entities[x][y];       
+                    }
+                }
+        
+            }
+            function RandomizeMap()
+            {
+                visibleTiles = [];
+                exploredTiles = [];
+                entities = [];
+                goals = [];
+                collectedGoals = [];
+                numberOfTurns = 0;
+                startOfGame = Date.now();
+                //Skapar noise
+                for (let x = 0; x < width; x++) 
+                {
+                    entities[x] = [];
+                    tempEntities[x] = [];
+                    exploredTiles[x] = [];
+                    for (let y = 0; y < height; y++) 
+                    {
+                        var value = Math.random();
+        
+                        if (value < 0.45)
+                        {
+                            entities[x][y] = "solid";
+                            tempEntities[x][y] = "solid";
+                        }
+                        else
+                        {
+                            entities[x][y] = "empty";
+                            tempEntities[x][y] = "empty";
+                        }
+                        exploredTiles[x][y] = "unexplored";
+                    } 
+                }
+                CellularAutomata(2);
+                CellularAutomata(1);
+        
+                playerY = Math.floor(Math.random() * height);
+                playerX = Math.floor(Math.random() * width);
+        
+        
+                while (entities[playerX][playerY] == "solid")
+                {
+                    playerY = Math.floor(Math.random() * height);
+                    playerX = Math.floor(Math.random() * width);
+                }
+                entities[playerX][playerY] = "player";
+        
+                for (var index = 0; index < numberOfGoals; index++) 
+                {
+                    var testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height), goalColors[index]];
+                    while (entities[testPos[0]][testPos[1]] != "empty")
+                    {
+                        testPos = [Math.floor(Math.random() * width), Math.floor(Math.random() * height), goalColors[index]];
+                    }
+                    goals[index] = testPos;
+                    entities[testPos[0]][testPos[1]] = "goal";
+                }
+                
+        
+                Update();
+            }
+            function Wrapping(x, y)
+            {
+        
+                var newX = x;
+                var newY = y;
+        
+                if (x >= width)
+                {
+                    newX = x - width;
+                }
+                else if (x < 0)
+                {
+                    newX = x + width;
+                }
+                if (y >= height)
+                {
+                    newY = y - (height);
+                }
+                else if (y < 0)
+                {
+                    newY = y + (height);
+                }
+                return [newX, newY];
+            }
+        
+            function UpdatePlayer(direction)
+            {
+                var colResult = MoveUnit([playerX, playerY, "player"], direction);
+        
+                if (colResult[2] != "solid")
+                {
+        
+                    if (colResult[2] == "goal")
+                    {
+                        for (var index = 0; index < goals.length; index++) 
+                        {
+                            if (goals[index][0] == colResult[0] && goals[index][1] == colResult[1])
+                            {
+                                collectedGoals.push(goals[index]);
+                                goals.splice(index, 1);
+                                entities[colResult[0]][colResult[1]] = "player";
+                                entities[colResult[0]][colResult[1]] = "empty";
+                            }
+                        }
+        
+                    }
+                    playerX = colResult[0];
+                    playerY = colResult[1];
+                    console.log(playerX, playerY);
+                    Update();
+                }
+            }
+            
+            function MoveUnit(unit, direction)
+            {
+                //Element 0 is the X pos of the unit
+                //Element 1 is the Y pos of the unit
+                //Element 2 is the name of the unit
+                var tempPosX = unit[0];
+                var tempPosY = unit[1];
+                
+                if (direction == "South")
+                {
+                    tempPosY += 1;   
+                }
+                else if (direction == "East")
+                {
+                    tempPosX += 1;  
+                }
+                else if (direction == "North")
+                {
+                    tempPosY -= 1;
+                }
+                else if (direction == "West")
+                {
+                    tempPosX -= 1;
+                }
+                [tempPosX, tempPosY] = Wrapping(tempPosX, tempPosY);
+                if (!Collision(tempPosX, tempPosY))
+                {
+                    entities[tempPosX][tempPosY] = unit[2];
+                    entities[unit[0]][unit[1]] = "empty";
+                    return [tempPosX, tempPosY, entities[tempPosX][tempPosY], true];
+                }
+                else
+                {
+                    return [tempPosX, tempPosY, entities[tempPosX][tempPosY], false];
+                }
+            }
+            function GetIndex(x, y, array)
+            {
+                for (var index = 0; index < array.length; index++) 
+                {
+                    if (array[index][0] == x && array[index][1] == y)
+                    {
+                        return index;
+                    }
+                }
+            }
+        
+        
+            function ComputeLight()
+            {
+                var source = [playerX, playerY];
+                for (var i = 0; i < 4; i++)
+                {
+                    quadrant = [source, directions[i]];
+                    var firstRow = [1, -1, 1];
+        
+                    LightScan(firstRow);
+                }
+            }
+        
+            function LightScan(row)
+            {
+                //First element is the depth of the row. If outside the view of the screen, there is no point to continue calculating.
+                if (row[0] > screenSize || !isFinite(row[2]))
+                {
+                    return;
+                }
+                //Tiles are 2D vectors made through an array. The first element is the X value, second is the Y value.
+        
+                var prevTile;
+        
+                var tiles = Tiles(row);
+        
+                for (let i = 0; i < tiles.length; i++) 
+                {
+                    var tile = tiles[i];
+                    if (Wall(tile) || Symmetric(row, tile))
+                    {
+                        var visTile = QuadTransform(tile);
+                        exploredTiles[visTile[0]][visTile[1]] = "visible";
+                    }
+                    if (prevTile && Wall(prevTile) && Floor(tile))
+                    {
+                        row[1] = Slope(tile)
+                    }
+                    if (prevTile && Floor(prevTile) && Wall(tile))
+                    {
+                        var nextRow = NextRow(row);
+                        nextRow[2] = Slope(tile);
+                        LightScan(nextRow);
+                    }
+                    prevTile = tile;
+                }
+                if (Floor(prevTile))
+                {
+                    LightScan(NextRow(row));
+                }
+                return;
+            }
+            function Tiles(row)
+            {
+                var minColumn = RoundTiesUp(row[0] * row[1]);
+                var maxColumn = RoundTiesDown(row[0] * row[2]);
+        
+                var tiles = [];
+                for (var i = 0; i < maxColumn + 1 - minColumn; i++)
+                {
+                    var v2d = [row[0], minColumn + i];
+                    tiles.push(v2d);
+                }
+                return tiles;
+            }
+            function RoundTiesUp(number)
+            {
+                return Math.floor(number + 0.5);
+            }
+            function RoundTiesDown(number)
+            {
+                return Math.ceil(number - 0.5);
+            }
+            function Symmetric(row, tile)
+            {
+                return tile[1] >= row[0] * row[1] && tile[1] <= row[0] * row[2];
+            }
+            function Floor(tile)
+            {
+                return !(Wall(tile));
+            }
+            function Slope(tile)
+            {
+                return (2.0 * tile[1] - 1.0) / (2.0 * tile[0]);
+            }
+            function QuadTransform(tile)
+            {
+                var tileToCheck = [];
+                if (quadrant[1] == "South")
+                {
+                    return Wrapping(quadrant[0][0] + tile[0], quadrant[0][1] + tile[1]);
+                }
+                else if (quadrant[1] == "East")
+                {
+                    return Wrapping(quadrant[0][0] + tile[1], quadrant[0][1] + tile[0]);
+                }
+                else if (quadrant[1] == "North")
+                {
+                    return Wrapping(quadrant[0][0] + tile[1], quadrant[0][1] - tile[0]);
+                }
+                else if (quadrant[1] == "West")
+                {
+                    return Wrapping(quadrant[0][0] - tile[0], quadrant[0][1] + tile[1]);
+                }
+            }
+            function NextRow(prevRow)
+            {
+                var nextRow = [prevRow[0] + 1, prevRow[1], prevRow[2]];
+                return nextRow;
+            }
+        
+            function Collision(x, y)
+            {
+                if (entities[x][y] != "empty")
+                {
+                    return true;
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+            function Wall(tile)
+            {
+                var tileToCheck = QuadTransform(tile, quadrant);
+                if (entities[tileToCheck[0]][tileToCheck[1]] == "solid")
+                {
+                    return true;
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,104 @@
+
+.mini
+{
+
+}
+
+button
+{
+    width: 150px;
+    height: 50px;
+    display: inline-block;   
+    margin: auto;
+    border-style:none;
+    border-radius: 15px;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: large;
+    background-color: rgb(75, 109, 110);
+    color: rgb(73, 55, 55);
+  
+}
+button:hover
+{
+    color:rgb(185, 172, 153);
+}
+.topbutton
+{
+    display: block;
+    background: linear-gradient(to top, rgb(102, 121, 141), darkslategray);
+}
+.bottombutton
+{
+    display: block;
+    background: linear-gradient(to bottom, rgb(102, 121, 141), darkslategray);
+}
+.leftbutton
+{
+    float: left;
+    background: linear-gradient(to left, rgb(102, 121, 141), darkslategray);
+}
+.rightbutton
+{
+    float: right;
+    background: linear-gradient(to right, rgb(102, 121, 141), darkslategray);
+}
+.restartbutton
+{
+    width: 90px;
+    height: 90px;
+    border-radius: 360px;
+    display: block;
+    border-style:solid;
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(255, 0, 0);
+    color: rgb(0, 0, 0);
+
+}
+.divider
+{
+    height: 50px;
+}
+section
+{
+    display: inline-block;
+    min-width: 200px;
+    height: 600px;
+    vertical-align:top;
+}
+.mid
+{
+    width: 600px;
+    /* background-color: rgb(102, 121, 141); */
+}
+.left
+{
+    background: linear-gradient(to left, rgb(102, 121, 141), darkslategray);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
+}
+.right
+{
+    background: linear-gradient(to right, rgb(102, 121, 141), darkslategray);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
+    width: 240px;
+    margin: auto;
+}
+.screenparts
+{
+    font-size: 0%;
+}
+.indicators
+{
+    min-width: 30px;
+}
+span
+{
+    color: greenyellow;
+}
+main 
+{
+    margin: 0 auto;
+    width: 1090px;
+    margin: 132px 0px 0px 400px;
+}
